@@ -1,0 +1,42 @@
+---
+import { categories, company } from '../data/catalog.js';
+const firstCols = categories.slice(0, 5);
+---
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__grid">
+      <div class="ftr__brand">
+        <span class="brand__name">EUROCALL</span>
+        <p>Κέντρο εξοπλισμού επαγγελματικής κουζίνας από το {company.since}. Νέος & μεταχειρισμένος εξοπλισμός, custom ανοξείδωτες κατασκευές, τεχνική υποστήριξη.</p>
+      </div>
+      <div>
+        <h4>Προϊόντα</h4>
+        <ul>
+          {firstCols.map((c) => (<li><a href={`/proionta/${c.slug}`}>{c.name}</a></li>))}
+        </ul>
+      </div>
+      <div>
+        <h4>Εταιρεία</h4>
+        <ul>
+          <li><a href="/proionta/anoxeidotes-kataskeves#custom">Custom Κατασκευές</a></li>
+          <li><a href="/epikoinonia">Πώς δουλεύουμε</a></li>
+          <li><a href="/endiaferon">Λίστα ενδιαφέροντος</a></li>
+          <li><a href="/epikoinonia">Επικοινωνία</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Επικοινωνία</h4>
+        <ul>
+          <li>{company.phone}</li>
+          <li>{company.email}</li>
+          <li>{company.address}</li>
+          <li>{company.hours}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__btm">
+      <span>© 2026 Eurocall. Με επιφύλαξη παντός δικαιώματος.</span>
+      <span>Σχεδιασμός & ανάπτυξη: <span class="istos">Istos Studio</span></span>
+    </div>
+  </div>
+</footer>

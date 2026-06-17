@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const {
+  title = 'Eurocall — Εξοπλισμός Επαγγελματικής Κουζίνας · Ιωάννινα',
+  description = 'Κέντρο εξοπλισμού επαγγελματικής κουζίνας από το 2000. Φούρνοι, ψύξη, ανοξείδωτες κατασκευές, μηχανήματα εστίασης. Νέος & μεταχειρισμένος εξοπλισμός, custom κατασκευές. Ιωάννινα & πανελλαδικά.',
+  current,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/images/eurocall-hero-kitchen.png', Astro.site).href;
+---
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="Eurocall" />
+    <meta property="og:locale" content="el_GR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <Header current={current} />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <script is:inline>
+      // ---- Λίστα ενδιαφέροντος (localStorage, shared σε όλες τις σελίδες) ----
+      window.EuroCart = (function () {
+        const KEY = 'eurocall_interest';
+        const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
+        const write = (v) => { localStorage.setItem(KEY, JSON.stringify(v)); paint(); };
+        function paint() {
+          const list = read();
+          const count = document.getElementById('cartCount');
+          if (count) {
+            count.textContent = list.length;
+            count.classList.toggle('on', list.length > 0);
+          }
+          document.dispatchEvent(new CustomEvent('cart:change', { detail: list }));
+        }
+        function has(name) { return read().some((p) => p.name === name); }
+        function toggle(p) {
+          const list = read();
+          const i = list.findIndex((x) => x.name === p.name);
+          if (i >= 0) list.splice(i, 1); else list.push(p);
+          write(list);
+          return i < 0; // true αν προστέθηκε
+        }
+        function remove(name) { write(read().filter((p) => p.name !== name)); }
+        document.addEventListener('DOMContentLoaded', () => {
+          paint();
+          // sync κουμπιά προϊόντων με την κατάσταση
+          document.querySelectorAll('.prod__cta[data-name]').forEach((btn) => {
+            const name = btn.getAttribute('data-name');
+            const sync = () => {
+              const on = has(name);
+              btn.classList.toggle('added', on);
+              btn.textContent = on ? '✓ Προστέθηκε' : '+ Προσθήκη στο ενδιαφέρον';
+            };
+            sync();
+            btn.addEventListener('click', () => {
+              toggle({ name, spec: btn.dataset.spec || '', img: btn.dataset.img || '', cat: btn.dataset.cat || '' });
+              sync();
+            });
+          });
+        });
+        return { read, has, toggle, remove, paint };
+      })();
+    </script>
+  </body>
+</html>

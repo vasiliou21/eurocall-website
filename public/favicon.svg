@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Eurocall">
+  <rect width="64" height="64" rx="12" fill="#061b72"/>
+  <rect x="3" y="3" width="58" height="58" rx="10" fill="none" stroke="#0047ba" stroke-width="2"/>
+  <path d="M22 18h22v7H30v6h12v7H30v6h14v7H22z" fill="#fff"/>
+  <rect x="22" y="44" width="22" height="3" fill="#2da884"/>
+</svg>

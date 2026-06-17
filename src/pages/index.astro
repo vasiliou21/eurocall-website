@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro';
+import { categories } from '../data/catalog.js';
+---
+<Base current="home">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__bg" aria-hidden="true">
+      <img src="/images/eurocall-hero-kitchen.png" alt="" fetchpriority="high" />
+    </div>
+    <div class="wrap">
+      <div class="hero__in">
+        <div>
+          <h1>25 χρόνια εξοπλίζουμε <em>επαγγελματικές κουζίνες.</em></h1>
+          <p class="hero__sub">Φούρνοι, ψύξη, μηχανήματα και ανοξείδωτες κατασκευές δικής μας παραγωγής — για εστιατόρια, ξενοδοχεία και catering. Νέος και μεταχειρισμένος εξοπλισμός, με service και ανταλλακτικά που τον κρατούν στη δουλειά.</p>
+          <div class="hero__ctas">
+            <a href="#categories" class="btn btn--flame">Δείτε τα προϊόντα</a>
+            <a href="/endiaferon" class="btn btn--ghost-l">Ζητήστε προσφορά</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="herostrip">
+    <div class="wrap">
+      <div class="herostrip__in">
+        <div class="herostat"><b>Από το 2000</b><span>25 χρόνια στον κλάδο</span></div>
+        <div class="herostat"><b>Νέα & Μεταχειρισμένα</b><span>Ελεγμένος εξοπλισμός</span></div>
+        <div class="herostat"><b>Custom κατασκευές</b><span>Δική μας παραγωγή inox</span></div>
+        <div class="herostat"><b>Ιωάννινα & πανελλαδικά</b><span>Παράδοση & εγκατάσταση</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="sec" id="categories">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Κατηγορίες προϊόντων</span>
+        <h2>Όλη η κουζίνα σας, από έναν προμηθευτή</h2>
+        <p>Δέκα βασικές κατηγορίες εξοπλισμού εστίασης — με συμβουλή πριν την αγορά και υποστήριξη μετά.</p>
+      </div>
+      <div class="cats">
+        {categories.map((c, i) => (
+          <a href={`/proionta/${c.slug}`} class="catrow">
+            <div class="catrow__img"><img src={c.hero} alt={c.name} loading="lazy" /></div>
+            <div class="catrow__body">
+              <div class="catrow__top"><span class="catrow__num">{String(i + 1).padStart(2, '0')}</span><h3>{c.name}</h3></div>
+              <p class="catrow__desc">{c.intro}</p>
+              <span class="catrow__link">Δείτε προϊόντα →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOM -->
+  <section class="sec sec--coal" id="custom">
+    <div class="wrap custom">
+      <div class="custom__img">
+        <img src="/images/eurocall-custom-inox.png" alt="Custom ανοξείδωτες κατασκευές επαγγελματικής κουζίνας" loading="lazy" />
+      </div>
+      <div>
+        <span class="eyebrow">Ανοξείδωτες κατασκευές επί παραγγελία</span>
+        <h2>Δεν χωράει το έτοιμο; Το φτιάχνουμε στα μέτρα σας.</h2>
+        <p>Εδώ και 25 χρόνια σχεδιάζουμε και κατασκευάζουμε λάντζες, πάγκους, ερμάρια και πλήρεις γραμμές κουζίνας — προσαρμοσμένα στον χώρο και τη ροή δουλειάς της δικής σας επιχείρησης.</p>
+        <ul>
+          <li>Μέτρηση και σχεδιασμός στον χώρο σας</li>
+          <li>Inox AISI 304 — ανθεκτικό σε καθημερινή επαγγελματική χρήση</li>
+          <li>Παράδοση και εγκατάσταση από το δικό μας συνεργείο</li>
+          <li>Από ένα ράφι μέχρι ολόκληρη γραμμή παραγωγής</li>
+        </ul>
+        <a href="/endiaferon" class="btn btn--flame">Συζητήστε την κατασκευή σας</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEPS -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Πώς δουλεύουμε</span>
+        <h2>Από το αίτημα στην εγκατάσταση</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step__n">01</div><h3>Επιλέγετε προϊόντα</h3><p>Περιηγηθείτε στις κατηγορίες και προσθέστε όσα σας ενδιαφέρουν στη λίστα σας.</p></div>
+        <div class="step"><div class="step__n">02</div><h3>Στέλνετε το αίτημα</h3><p>Λαμβάνουμε τη λίστα σας και ετοιμάζουμε προσφορά με τιμές και διαθεσιμότητα.</p></div>
+        <div class="step"><div class="step__n">03</div><h3>Σας καλούμε εντός 24h</h3><p>Συζητάμε ανάγκες, εναλλακτικές και — αν χρειάζεται — custom λύσεις.</p></div>
+        <div class="step"><div class="step__n">04</div><h3>Παράδοση & εγκατάσταση</h3><p>Παραδίδουμε και εγκαθιστούμε, με τεχνική υποστήριξη και μετά την πώληση.</p></div>
+      </div>
+    </div>
+  </section>
+</Base>

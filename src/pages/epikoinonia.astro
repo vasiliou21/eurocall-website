@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import { company } from '../data/catalog.js';
+const title = 'Επικοινωνία — Eurocall · Ιωάννινα';
+const description = 'Επικοινωνήστε με την Eurocall στα Ιωάννινα. Τηλέφωνο, email, διεύθυνση και ωράριο.';
+---
+<Base title={title} description={description} current="contact">
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow" style="color:#9fc2ff">Επικοινωνία</span>
+      <h1>Είμαστε εδώ για την κουζίνα σας</h1>
+      <p>Καλέστε μας, στείλτε email ή περάστε από το κατάστημά μας στα Ιωάννινα. Για συγκεκριμένα προϊόντα, χρησιμοποιήστε τη λίστα ενδιαφέροντος.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap interest-grid">
+      <div>
+        <div class="sec-head" style="margin-bottom:20px"><h2 style="font-size:1.4rem">Στοιχεία επικοινωνίας</h2></div>
+        <div class="interest-list">
+          <div class="interest-row" style="grid-template-columns:1fr">
+            <div><b>Τηλέφωνο</b><br/><span><a href={`tel:${company.phoneHref}`} style="color:var(--flame)">{company.phone}</a> · {company.hours}</span></div>
+          </div>
+          <div class="interest-row" style="grid-template-columns:1fr">
+            <div><b>Email</b><br/><span><a href={`mailto:${company.email}`} style="color:var(--flame)">{company.email}</a></span></div>
+          </div>
+          <div class="interest-row" style="grid-template-columns:1fr">
+            <div><b>Διεύθυνση</b><br/><span>{company.address}</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-head" style="margin-bottom:20px"><h2 style="font-size:1.4rem">Πώς δουλεύουμε</h2></div>
+        <div class="steps" style="grid-template-columns:1fr">
+          <div class="step" style="border-right:none;border-bottom:1px solid var(--line-l)"><div class="step__n">01</div><h3>Επιλέγετε προϊόντα</h3><p>Προσθέτετε όσα σας ενδιαφέρουν στη λίστα.</p></div>
+          <div class="step" style="border-right:none;border-bottom:1px solid var(--line-l)"><div class="step__n">02</div><h3>Στέλνετε αίτημα</h3><p>Ετοιμάζουμε προσφορά με τιμές & διαθεσιμότητα.</p></div>
+          <div class="step" style="border-right:none"><div class="step__n">03</div><h3>Παράδοση & εγκατάσταση</h3><p>Με τεχνική υποστήριξη και μετά την πώληση.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

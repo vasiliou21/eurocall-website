@@ -1,0 +1,21 @@
+---
+const { product, category } = Astro.props;
+---
+<article class="prod">
+  <div class="prod__img">
+    {product.used && <span class="prod__badge">Μεταχειρισμένο · Ελεγμένο</span>}
+    <img src={product.img} alt={product.name} loading="lazy" />
+  </div>
+  <div class="prod__body">
+    <span class="prod__cat">{category}</span>
+    <h3>{product.name}</h3>
+    <p class="prod__spec">{product.spec}</p>
+    <button
+      class="prod__cta"
+      data-name={product.name}
+      data-spec={product.spec}
+      data-img={product.img}
+      data-cat={category}
+    >+ Προσθήκη στο ενδιαφέρον</button>
+  </div>
+</article>

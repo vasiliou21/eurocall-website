@@ -1,0 +1,7 @@
+# Eurocall — Netlify static Astro deploy
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"

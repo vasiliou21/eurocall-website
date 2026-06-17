@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import { company } from '../data/catalog.js';
+const title = 'Λίστα Ενδιαφέροντος — Ζητήστε Προσφορά · Eurocall';
+const description = 'Στείλτε μας τα προϊόντα που σας ενδιαφέρουν και επικοινωνούμε εντός 24 ωρών με τιμές και διαθεσιμότητα.';
+---
+<Base title={title} description={description} current="interest">
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow" style="color:#9fc2ff">Αίτημα προσφοράς</span>
+      <h1>Η λίστα ενδιαφέροντός σας</h1>
+      <p>Δείτε τα προϊόντα που επιλέξατε, συμπληρώστε τα στοιχεία σας και θα επικοινωνήσουμε εντός 24 ωρών με τιμές και διαθεσιμότητα.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap interest-grid">
+      <!-- ΛΙΣΤΑ -->
+      <div>
+        <div class="sec-head" style="margin-bottom:20px"><h2 style="font-size:1.4rem">Επιλεγμένα προϊόντα</h2></div>
+        <div class="interest-list" id="interestList"></div>
+        <div class="interest-empty" id="interestEmpty">
+          Δεν έχετε προσθέσει προϊόντα ακόμα.<br/>
+          <a href="/" style="color:var(--flame);font-weight:600">Δείτε τις κατηγορίες προϊόντων →</a>
+        </div>
+      </div>
+
+      <!-- ΦΟΡΜΑ -->
+      <div>
+        <div class="sec-head" style="margin-bottom:20px"><h2 style="font-size:1.4rem">Τα στοιχεία σας</h2></div>
+        <form class="form" name="endiaferon" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/efxaristoume" id="interestForm">
+          <input type="hidden" name="form-name" value="endiaferon" />
+          <p hidden><label>Μη συμπληρώνετε: <input name="bot-field" /></label></p>
+          <input type="hidden" name="προϊόντα" id="productsField" />
+          <div class="form__row">
+            <div class="field"><label for="f-name">Ονοματεπώνυμο</label><input id="f-name" name="ονοματεπώνυμο" type="text" required placeholder="Το όνομά σας" /></div>
+            <div class="field"><label for="f-biz">Επιχείρηση</label><input id="f-biz" name="επιχείρηση" type="text" placeholder="Επωνυμία / είδος" /></div>
+          </div>
+          <div class="form__row">
+            <div class="field"><label for="f-phone">Τηλέφωνο</label><input id="f-phone" name="τηλέφωνο" type="tel" required placeholder="69x xxx xxxx" /></div>
+            <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" placeholder="email@example.com" /></div>
+          </div>
+          <div class="field"><label for="f-msg">Μήνυμα</label><textarea id="f-msg" name="μήνυμα" placeholder="Περιγράψτε τον χώρο ή τις ανάγκες σας — π.χ. νέο κατάστημα, αντικατάσταση εξοπλισμού, custom κατασκευή."></textarea></div>
+          <button type="submit" class="btn btn--flame" style="width:100%;justify-content:center;padding:14px">Αποστολή αιτήματος</button>
+          <p class="form__note">Ή καλέστε μας απευθείας: <a href={`tel:${company.phoneHref}`} style="color:var(--flame);font-weight:600">{company.phone}</a> · {company.hours}</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    function renderInterest() {
+      const list = window.EuroCart.read();
+      const wrap = document.getElementById('interestList');
+      const empty = document.getElementById('interestEmpty');
+      const field = document.getElementById('productsField');
+      wrap.innerHTML = '';
+      empty.style.display = list.length ? 'none' : 'block';
+      field.value = list.map((p) => `• ${p.name}${p.cat ? ' (' + p.cat + ')' : ''}`).join('\n');
+      list.forEach((p) => {
+        const row = document.createElement('div');
+        row.className = 'interest-row';
+        row.innerHTML =
+          '<img src="' + p.img + '" alt="" />' +
+          '<div><b>' + p.name + '</b><br/><span>' + (p.spec || '') + '</span></div>' +
+          '<button type="button" aria-label="Αφαίρεση" data-remove="' + p.name.replace(/"/g, '&quot;') + '">×</button>';
+        wrap.appendChild(row);
+      });
+      wrap.querySelectorAll('[data-remove]').forEach((b) => {
+        b.addEventListener('click', () => { window.EuroCart.remove(b.dataset.remove); renderInterest(); });
+      });
+    }
+    document.addEventListener('DOMContentLoaded', renderInterest);
+    document.addEventListener('cart:change', renderInterest);
+  </script>
+</Base>

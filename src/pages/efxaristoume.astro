@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+const title = 'Ευχαριστούμε — Eurocall';
+---
+<Base title={title} description="Λάβαμε το αίτημά σας.">
+  <section class="page-head" style="padding-block:80px">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow" style="color:#9fc2ff">Λάβαμε το αίτημά σας</span>
+      <h1>Ευχαριστούμε!</h1>
+      <p style="margin-inline:auto">Θα επικοινωνήσουμε μαζί σας εντός 24 ωρών εργάσιμης ημέρας με τιμές και διαθεσιμότητα. Αν βιάζεστε, καλέστε μας στο <a href="tel:+306945936149" style="color:#9fc2ff;font-weight:600">694 593 6149</a>.</p>
+    </div>
+  </section>
+  <section class="sec" style="text-align:center">
+    <div class="wrap">
+      <a href="/" class="btn btn--flame">Επιστροφή στην αρχική</a>
+    </div>
+  </section>
+  <script is:inline>
+    // Καθαρισμός λίστας μετά την επιτυχή αποστολή
+    try { localStorage.removeItem('eurocall_interest'); } catch (e) {}
+  </script>
+</Base>

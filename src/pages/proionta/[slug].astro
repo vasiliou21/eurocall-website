@@ -1,0 +1,80 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { categories } from '../../data/catalog.js';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
+}
+
+const { category } = Astro.props;
+const others = categories.filter((c) => c.slug !== category.slug);
+const title = `${category.name} — Eurocall · Εξοπλισμός Επαγγελματικής Κουζίνας`;
+const description = `${category.name}: ${category.intro} Νέος & μεταχειρισμένος εξοπλισμός, Ιωάννινα & πανελλαδικά. Ζητήστε προσφορά.`;
+const isCustom = category.slug === 'anoxeidotes-kataskeves';
+---
+<Base title={title} description={description} current="products">
+  <!-- PAGE HEAD -->
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow" style="color:#9fc2ff">Κατηγορία προϊόντων</span>
+      <h1>{category.name}</h1>
+      <p>{category.intro}</p>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="sec sec--steelbg">
+    <div class="wrap">
+      <div class="prods prods--3">
+        {category.products.map((p) => (
+          <ProductCard product={p} category={`${category.name}`} />
+        ))}
+      </div>
+      <p style="margin-top:28px;color:var(--txt-body);font-size:0.95rem">
+        Δείγμα από τη γκάμα μας στην κατηγορία. Για πλήρη διαθεσιμότητα και τιμές,
+        <a href="/endiaferon" style="color:var(--flame);font-weight:600">στείλτε μας αίτημα προσφοράς</a> — απαντάμε εντός 24 ωρών.
+      </p>
+    </div>
+  </section>
+
+  {isCustom && (
+    <section class="sec sec--coal" id="custom">
+      <div class="wrap custom">
+        <div class="custom__img">
+          <img src="/images/barstation_redirect_600x600.webp" alt="Custom ανοξείδωτη κατασκευή δικής μας παραγωγής" />
+        </div>
+        <div>
+          <span class="eyebrow" style="color:#9fc2ff">Επί παραγγελία</span>
+          <h2>Το φτιάχνουμε στα μέτρα σας</h2>
+          <p>Σχεδιάζουμε και κατασκευάζουμε λάντζες, πάγκους, ερμάρια και πλήρεις γραμμές κουζίνας — προσαρμοσμένα στον χώρο σας, από inox AISI 304, δικής μας παραγωγής.</p>
+          <ul>
+            <li>Μέτρηση και σχεδιασμός στον χώρο σας</li>
+            <li>Παράδοση και εγκατάσταση από το συνεργείο μας</li>
+            <li>Από ένα ράφι μέχρι ολόκληρη γραμμή παραγωγής</li>
+          </ul>
+          <a href="/endiaferon" class="btn btn--flame">Συζητήστε την κατασκευή σας</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ΑΛΛΕΣ ΚΑΤΗΓΟΡΙΕΣ -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Συνεχίστε</span><h2>Άλλες κατηγορίες</h2></div>
+      <div class="cats">
+        {others.slice(0, 4).map((c, i) => (
+          <a href={`/proionta/${c.slug}`} class="catrow">
+            <div class="catrow__img"><img src={c.hero} alt={c.name} loading="lazy" /></div>
+            <div class="catrow__body">
+              <div class="catrow__top"><h3>{c.name}</h3></div>
+              <p class="catrow__desc">{c.intro}</p>
+              <span class="catrow__link">Δείτε προϊόντα →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
