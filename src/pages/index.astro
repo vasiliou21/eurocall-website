@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import LiveProducts from '../components/LiveProducts.astro';
 import { categories } from '../data/catalog.js';
 ---
 <Base current="home">
@@ -55,6 +56,19 @@ import { categories } from '../data/catalog.js';
       </div>
     </div>
   </section>
+
+  <!-- ΔΙΑΘΕΣΙΜΑ ΜΕΤΑΧΕΙΡΙΣΜΕΝΑ ΤΩΡΑ (γεμίζει client-side· κρύβεται αν δεν υπάρχει στοκ) -->
+  <section class="sec sec--steelbg" id="usedNow" style="display:none">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Διαθέσιμα τώρα</span>
+        <h2>Μεταχειρισμένος εξοπλισμός — ελεγμένος, έτοιμος για δουλειά</h2>
+        <p>Επιλεγμένα μεταχειρισμένα που έχουμε αυτή τη στιγμή. Η διαθεσιμότητα αλλάζει συχνά — ρωτήστε μας.</p>
+      </div>
+      <div class="prods prods--3" id="usedGrid"></div>
+    </div>
+  </section>
+  <LiveProducts target="#usedGrid" mode="used" prepend={false} hideSelector="#usedNow" />
 
   <!-- CUSTOM -->
   <section class="sec sec--coal" id="custom">

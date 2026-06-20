@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import LiveProducts from '../../components/LiveProducts.astro';
 import { categories } from '../../data/catalog.js';
 
 export function getStaticPaths() {
@@ -26,11 +27,12 @@ const isCustom = category.slug === 'anoxeidotes-kataskeves';
   <!-- PRODUCTS -->
   <section class="sec sec--steelbg">
     <div class="wrap">
-      <div class="prods prods--3">
+      <div class="prods prods--3" id="liveGrid">
         {category.products.map((p) => (
           <ProductCard product={p} category={`${category.name}`} />
         ))}
       </div>
+      <LiveProducts target="#liveGrid" mode="category" slug={category.slug} prepend={true} />
       <p style="margin-top:28px;color:var(--txt-body);font-size:0.95rem">
         Δείγμα από τη γκάμα μας στην κατηγορία. Για πλήρη διαθεσιμότητα και τιμές,
         <a href="/endiaferon" style="color:var(--flame);font-weight:600">στείλτε μας αίτημα προσφοράς</a> — απαντάμε εντός 24 ωρών.

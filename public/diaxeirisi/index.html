@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Eurocall — Διαχείριση Προϊόντων</title>
+<style>
+  :root { --blue:#0047ba; --navy:#061b72; --green:#2da884; --ink:#0f1a2e; --line:#e3e8f0; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--ink); background:#f4f6fb; line-height:1.4; }
+  header { background:var(--navy); color:#fff; padding:16px 18px; position:sticky; top:0; z-index:5; }
+  header b { font-size:1.05rem; }
+  header span { display:block; font-size:.8rem; opacity:.75; margin-top:2px; }
+  main { max-width:560px; margin:0 auto; padding:18px 16px 60px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; }
+  label { display:block; font-weight:600; font-size:.92rem; margin:14px 0 6px; }
+  label:first-child { margin-top:0; }
+  input[type=text], textarea, select {
+    width:100%; padding:13px 12px; font-size:16px; border:1.5px solid var(--line);
+    border-radius:10px; background:#fff; color:var(--ink); }
+  textarea { min-height:64px; resize:vertical; }
+  .seg { display:flex; gap:8px; }
+  .seg button { flex:1; padding:13px; border:1.5px solid var(--line); background:#fff; border-radius:10px;
+    font-size:.95rem; font-weight:600; color:#5a6677; cursor:pointer; }
+  .seg button.on { border-color:var(--green); background:#eafaf4; color:#1d7a5c; }
+  .photos { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .thumb { position:relative; width:74px; height:74px; border-radius:9px; overflow:hidden; border:1px solid var(--line); }
+  .thumb img { width:100%; height:100%; object-fit:cover; }
+  .thumb b { position:absolute; top:2px; right:2px; background:rgba(0,0,0,.6); color:#fff;
+    width:20px; height:20px; border-radius:50%; font-size:13px; line-height:20px; text-align:center; cursor:pointer; }
+  .photo-add { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:16px; border:1.5px dashed #b9c4d6; border-radius:10px; background:#fbfcfe; color:var(--blue);
+    font-weight:600; cursor:pointer; margin-top:8px; }
+  .btn { display:block; width:100%; padding:15px; border:0; border-radius:11px; font-size:1rem;
+    font-weight:700; color:#fff; background:var(--blue); cursor:pointer; margin-top:20px; }
+  .btn:disabled { opacity:.55; }
+  .msg { padding:12px 14px; border-radius:10px; font-size:.92rem; margin-top:14px; display:none; }
+  .msg.ok { background:#eafaf4; color:#1d7a5c; display:block; }
+  .msg.err { background:#fdeaea; color:#b3261e; display:block; }
+  .hsec { font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:#7a8699; margin:6px 0 12px; font-weight:700; }
+  .item { display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); }
+  .item:last-child { border-bottom:0; }
+  .item img { width:52px; height:52px; border-radius:8px; object-fit:cover; background:#eef1f7; flex:0 0 auto; }
+  .item .meta { flex:1; min-width:0; }
+  .item .meta b { font-size:.95rem; display:block; }
+  .item .meta small { color:#7a8699; }
+  .badge { display:inline-block; font-size:.7rem; padding:2px 7px; border-radius:20px; background:#eef1f7; color:#5a6677; margin-left:6px; }
+  .badge.used { background:#fff3e0; color:#a85b00; }
+  .sold { padding:8px 12px; border:1.5px solid var(--line); background:#fff; border-radius:9px;
+    font-weight:600; font-size:.85rem; color:#b3261e; cursor:pointer; flex:0 0 auto; }
+  .sold.done { color:#7a8699; border-color:var(--line); }
+  .muted { color:#7a8699; font-size:.9rem; }
+  .gate { text-align:center; padding:40px 0; }
+  .gate input { max-width:240px; margin:14px auto 0; text-align:center; }
+</style>
+</head>
+<body>
+<header><b>Eurocall · Διαχείριση Προϊόντων</b><span>Ανέβασμα νέου / μεταχειρισμένου εξοπλισμού</span></header>
+<main>
+
+  <!-- ΠΥΛΗ ΚΩΔΙΚΟΥ -->
+  <div class="card gate" id="gate">
+    <div class="muted">Βάλτε τον κωδικό που σας δώσαμε για να συνεχίσετε.</div>
+    <input type="text" id="code" inputmode="text" autocomplete="off" placeholder="Κωδικός" />
+    <button class="btn" id="codeBtn">Είσοδος</button>
+    <div class="msg" id="gateMsg"></div>
+  </div>
+
+  <!-- ΦΟΡΜΑ -->
+  <div class="card" id="formCard" style="display:none">
+    <label>Κατηγορία</label>
+    <select id="category"></select>
+
+    <label>Όνομα προϊόντος</label>
+    <input type="text" id="name" placeholder="π.χ. Ψυγείο Θάλαμος Συντήρησης 360L" />
+
+    <label>Χαρακτηριστικά (μία γραμμή)</label>
+    <input type="text" id="spec" placeholder="π.χ. Inox · 5 ράφια · Ψηφιακός θερμοστάτης" />
+
+    <label>Κατάσταση</label>
+    <div class="seg" id="condition">
+      <button type="button" data-v="used" class="on">Μεταχειρισμένο</button>
+      <button type="button" data-v="new">Καινούριο</button>
+    </div>
+
+    <label>Φωτογραφίες (έως 4)</label>
+    <div class="photos" id="thumbs"></div>
+    <label class="photo-add" for="photo">📷 Προσθήκη φωτογραφίας</label>
+    <input type="file" id="photo" accept="image/*" capture="environment" multiple hidden />
+
+    <label>Σχόλιο / διαθεσιμότητα (προαιρετικό)</label>
+    <textarea id="note" placeholder="π.χ. 1 τεμάχιο, άριστη κατάσταση"></textarea>
+
+    <button class="btn" id="submitBtn">Ανέβασμα στο site</button>
+    <div class="msg" id="formMsg"></div>
+  </div>
+
+  <!-- ΛΙΣΤΑ ΠΡΟΪΟΝΤΩΝ -->
+  <div class="card" id="listCard" style="display:none">
+    <div class="hsec">Τα προϊόντα μου</div>
+    <div id="list"><div class="muted">Φόρτωση…</div></div>
+  </div>
+
+</main>
+<script>
+const FN = 'https://buwmhccjxuimhnscsujm.supabase.co/functions/v1/catalog';
+const CLIENT_ID = 'd011289f-1382-4229-b3a5-74f8c602f77d';
+const CATS = [
+  ['fournoi','Φούρνοι'], ['psyxi','Ψύξη'], ['anoxeidotes-kataskeves','Ανοξείδωτες Κατασκευές'],
+  ['psisimatos','Συσκευές Ψησίματος'], ['pagomixanes','Παγομηχανές'], ['plyntiria','Πλυντήρια'],
+  ['epexergasia-kreatos','Επεξεργασία Κρέατος'], ['bar-kafe','Μπαρ & Καφές'],
+  ['bain-marie','Bain Marie & Buffet'], ['blender-stiftes','Μπλέντερ & Στίφτες'],
+];
+const $ = (id) => document.getElementById(id);
+let code = localStorage.getItem('eurocall_admin_code') || '';
+let condition = 'used';
+let photos = []; // base64 data URLs (downscaled)
+
+// --- κλήση edge function ---
+async function call(action, extra) {
+  const r = await fetch(FN, { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action, client_id: CLIENT_ID, code, ...extra }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || 'σφάλμα');
+  return j;
+}
+
+// --- σμίκρυνση φωτό μέσω canvas (max 1600px, jpeg 0.82) ---
+function shrink(file) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1600;
+      let { width:w, height:h } = img;
+      if (w > max || h > max) { const s = Math.min(max/w, max/h); w = Math.round(w*s); h = Math.round(h*s); }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      res(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+function renderThumbs() {
+  $('thumbs').innerHTML = photos.map((src, i) =>
+    `<div class="thumb"><img src="${src}"/><b data-i="${i}">×</b></div>`).join('');
+  $('thumbs').querySelectorAll('b').forEach((b) =>
+    b.onclick = () => { photos.splice(+b.dataset.i, 1); renderThumbs(); });
+}
+
+// --- εμφάνιση εφαρμογής μετά από σωστό κωδικό ---
+async function unlock() {
+  try {
+    await call('list', {}); // αν περάσει, ο κωδικός ισχύει
+    localStorage.setItem('eurocall_admin_code', code);
+    $('gate').style.display = 'none';
+    $('formCard').style.display = '';
+    $('listCard').style.display = '';
+    $('category').innerHTML = CATS.map(([s,n]) => `<option value="${s}">${n}</option>`).join('');
+    loadList();
+  } catch (e) {
+    code = '';
+    $('gateMsg').className = 'msg err';
+    $('gateMsg').textContent = 'Λάθος κωδικός. Δοκιμάστε ξανά.';
+  }
+}
+
+async function loadList() {
+  try {
+    const { items } = await call('list', {});
+    if (!items.length) { $('list').innerHTML = '<div class="muted">Δεν έχετε ανεβάσει προϊόντα ακόμη.</div>'; return; }
+    $('list').innerHTML = items.map((it) => {
+      const sold = it.status === 'sold';
+      const cn = CATS.find(([s]) => s === it.category_slug); const cat = cn ? cn[1] : '';
+      return `<div class="item">
+        <img src="${(it.images&&it.images[0])||''}" alt=""/>
+        <div class="meta"><b>${it.name}</b>
+          <small>${cat}</small>
+          <span class="badge ${it.condition}">${it.condition==='used'?'Μεταχ/νο':'Καινούριο'}</span>
+          ${sold?'<span class="badge">Πουλήθηκε</span>':''}</div>
+        <button class="sold ${sold?'done':''}" data-id="${it.id}" data-status="${it.status}">
+          ${sold?'↩ Επαναφορά':'Πουλήθηκε'}</button>
+      </div>`;
+    }).join('');
+    $('list').querySelectorAll('.sold').forEach((b) => b.onclick = async () => {
+      const next = b.dataset.status === 'sold' ? 'available' : 'sold';
+      b.disabled = true;
+      try { await call('set_status', { id: b.dataset.id, status: next }); loadList(); }
+      catch { b.disabled = false; alert('Κάτι πήγε στραβά.'); }
+    });
+  } catch { $('list').innerHTML = '<div class="muted">Δεν φορτώθηκαν τα προϊόντα.</div>'; }
+}
+
+// --- events ---
+$('codeBtn').onclick = () => { code = $('code').value.trim(); if (code) unlock(); };
+$('code').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('codeBtn').click(); });
+
+document.querySelectorAll('#condition button').forEach((b) => b.onclick = () => {
+  condition = b.dataset.v;
+  document.querySelectorAll('#condition button').forEach((x) => x.classList.toggle('on', x === b));
+});
+
+$('photo').addEventListener('change', async (e) => {
+  for (const f of [...e.target.files]) {
+    if (photos.length >= 4) break;
+    try { photos.push(await shrink(f)); } catch {}
+  }
+  e.target.value = ''; renderThumbs();
+});
+
+$('submitBtn').onclick = async () => {
+  const name = $('name').value.trim();
+  const category_slug = $('category').value;
+  if (!name) { showForm('err', 'Συμπληρώστε όνομα προϊόντος.'); return; }
+  if (!photos.length) { showForm('err', 'Προσθέστε τουλάχιστον μία φωτογραφία.'); return; }
+  $('submitBtn').disabled = true; $('submitBtn').textContent = 'Ανεβαίνει…';
+  try {
+    await call('submit', { category_slug, name, spec: $('spec').value.trim(),
+      condition, note: $('note').value.trim(), images: photos });
+    showForm('ok', '✓ Ανέβηκε! Θα φανεί στο site σε λίγο.');
+    $('name').value = ''; $('spec').value = ''; $('note').value = ''; photos = []; renderThumbs();
+    loadList();
+  } catch (e) { showForm('err', 'Σφάλμα: ' + e.message); }
+  $('submitBtn').disabled = false; $('submitBtn').textContent = 'Ανέβασμα στο site';
+};
+
+function showForm(kind, text) { const m = $('formMsg'); m.className = 'msg ' + kind; m.textContent = text;
+  if (kind === 'ok') setTimeout(() => { m.className = 'msg'; }, 5000); }
+
+// auto-unlock αν υπάρχει αποθηκευμένος κωδικός
+if (code) unlock();
+</script>
+</body>
+</html>
