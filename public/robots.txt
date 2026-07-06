@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://eurocall.gr/sitemap-index.xml
+Sitemap: https://eurocall-faragiannis.gr/sitemap-index.xml
