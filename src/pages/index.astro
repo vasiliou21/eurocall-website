@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import LiveProducts from '../components/LiveProducts.astro';
-import { categories } from '../data/catalog.js';
+import { categories, productCategories } from '../data/catalog.js';
 ---
 <Base current="home">
   <!-- HERO -->
@@ -43,7 +43,7 @@ import { categories } from '../data/catalog.js';
         <p>Δέκα βασικές κατηγορίες εξοπλισμού εστίασης — με συμβουλή πριν την αγορά και υποστήριξη μετά.</p>
       </div>
       <div class="cats">
-        {categories.map((c, i) => (
+        {productCategories.map((c, i) => (
           <a href={`/proionta/${c.slug}`} class="catrow">
             <div class="catrow__img"><img src={c.hero} alt={c.name} loading="lazy" /></div>
             <div class="catrow__body">
@@ -57,18 +57,18 @@ import { categories } from '../data/catalog.js';
     </div>
   </section>
 
-  <!-- ΔΙΑΘΕΣΙΜΑ ΜΕΤΑΧΕΙΡΙΣΜΕΝΑ ΤΩΡΑ (γεμίζει client-side· κρύβεται αν δεν υπάρχει στοκ) -->
+  <!-- ΔΙΑΘΕΣΙΜΑ ΜΕΤΑΧΕΙΡΙΣΜΕΝΑ (client-side· κρύβεται αν άδειο) -->
   <section class="sec sec--steelbg" id="usedNow" style="display:none">
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Διαθέσιμα τώρα</span>
         <h2>Μεταχειρισμένος εξοπλισμός — ελεγμένος, έτοιμος για δουλειά</h2>
-        <p>Επιλεγμένα μεταχειρισμένα που έχουμε αυτή τη στιγμή. Η διαθεσιμότητα αλλάζει συχνά — ρωτήστε μας.</p>
+        <p>Επιλεγμένα μεταχειρισμένα που έχουμε αυτή τη στιγμή. <a href="/proionta/metaxeirismena" style="color:var(--flame);font-weight:600">Δείτε όλα τα μεταχειρισμένα →</a></p>
       </div>
       <div class="prods prods--3" id="usedGrid"></div>
     </div>
   </section>
-  <LiveProducts target="#usedGrid" mode="used" prepend={false} hideSelector="#usedNow" />
+  <LiveProducts target="#usedGrid" mode="used" hideSelector="#usedNow" emptyMessage="" />
 
   <!-- CUSTOM -->
   <section class="sec sec--coal" id="custom">

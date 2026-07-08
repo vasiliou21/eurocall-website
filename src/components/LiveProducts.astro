@@ -1,26 +1,40 @@
 ---
-// Istos Engine — Catalog module: live product injection (client-side fetch).
-// Διαβάζει τα διαθέσιμα προϊόντα του πελάτη από τη Supabase και τα προσθέτει
-// στο grid, ταιριάζοντας 1:1 το markup της ProductCard.astro (ώστε να δουλεύει
-// και το «καλάθι ενδιαφέροντος»).
+// Istos Engine — Catalog module: live product grid (μόνη πηγή προϊόντων).
 //
 // Props:
-//   target  — CSS selector του grid όπου μπαίνουν οι κάρτες
-//   mode    — 'category' (φίλτρο ανά slug) | 'used' (όλα τα μεταχειρισμένα)
-//   slug    — απαιτείται σε mode 'category'
-//   prepend — true: μπαίνουν ΠΡΙΝ τα στατικά (διαθέσιμο stock πρώτο)
+//   target       — CSS selector του grid
+//   mode         — 'category' | 'used'
+//   slug         — category slug (required for mode category)
+//   hideSelector — optional: κρύβει section αν άδειο (homepage used block)
+//   emptyMessage — optional custom empty text
 import { ISTOS } from '../data/istos.js';
 import { categories } from '../data/catalog.js';
-const { target, mode = 'category', slug = '', prepend = true, hideSelector = '' } = Astro.props;
+const {
+  target,
+  mode = 'category',
+  slug = '',
+  hideSelector = '',
+  emptyMessage = 'Δεν υπάρχουν διαθέσιμα προϊόντα σε αυτή την κατηγορία αυτή τη στιγμή.',
+} = Astro.props;
 const names = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
 ---
-<script is:inline define:vars={{ ISTOS, names, target, mode, slug, prepend, hideSelector }}>
+<div class="live-loading" data-live-loading={target} style="padding:24px 0;color:var(--txt-body);font-size:.95rem">
+  Φόρτωση προϊόντων…
+</div>
+<script is:inline define:vars={{ ISTOS, names, target, mode, slug, hideSelector, emptyMessage }}>
   (async function () {
+    const loading = document.querySelector('[data-live-loading="' + target + '"]');
     const hideEmpty = () => {
       if (!hideSelector) return;
       const h = document.querySelector(hideSelector);
       if (h) h.style.display = 'none';
     };
+    const showContainer = () => {
+      if (!hideSelector) return;
+      const h = document.querySelector(hideSelector);
+      if (h) h.style.display = '';
+    };
+
     try {
       let q = `${ISTOS.url}/rest/v1/catalog_items` +
         `?select=category_slug,name,spec,condition,images,sort_order,created_at` +
@@ -30,12 +44,17 @@ const names = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
       if (mode === 'used') q += `&condition=eq.used`;
 
       const res = await fetch(q, { headers: { apikey: ISTOS.anon } });
-      if (!res.ok) { hideEmpty(); return; }
+      if (!res.ok) { hideEmpty(); if (loading) loading.textContent = 'Δεν φορτώθηκαν τα προϊόντα.'; return; }
       const rows = await res.json();
-      if (!Array.isArray(rows) || !rows.length) { hideEmpty(); return; }
+      if (!Array.isArray(rows) || !rows.length) {
+        hideEmpty();
+        if (loading) loading.textContent = emptyMessage;
+        return;
+      }
 
       const grid = document.querySelector(target);
       if (!grid) { hideEmpty(); return; }
+      if (loading) loading.remove();
 
       const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) =>
         ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -59,8 +78,6 @@ const names = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
             ` data-img="${esc(img)}" data-cat="${esc(cat)}">+ Προσθήκη στο ενδιαφέρον</button>` +
           `</div>`;
 
-        // Σύνδεση με το «καλάθι» (τα στατικά δένονται στο DOMContentLoaded — τα
-        // δυναμικά τα δένουμε εδώ, χειροκίνητα, μέσω window.EuroCart).
         const btn = el.querySelector('.prod__cta');
         const sync = () => {
           const on = window.EuroCart && window.EuroCart.has(p.name);
@@ -76,17 +93,12 @@ const names = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
         frag.appendChild(el);
       }
 
-      if (prepend && grid.firstChild) grid.insertBefore(frag, grid.firstChild);
-      else grid.appendChild(frag);
-
-      // Επιτυχία: αν η ενότητα ξεκινά κρυφή (homepage), αποκάλυψέ την.
-      if (hideSelector) {
-        const h = document.querySelector(hideSelector);
-        if (h) h.style.display = '';
-      }
-
-      // Ξανα-paint του counter μετά την προσθήκη
+      grid.appendChild(frag);
+      showContainer();
       window.EuroCart && window.EuroCart.paint && window.EuroCart.paint();
-    } catch (_) { hideEmpty(); /* σιωπηλά: το στατικό περιεχόμενο μένει ως έχει */ }
+    } catch (_) {
+      hideEmpty();
+      if (loading) loading.textContent = 'Δεν φορτώθηκαν τα προϊόντα.';
+    }
   })();
 </script>

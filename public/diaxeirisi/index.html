@@ -7,7 +7,7 @@
 <title>Eurocall — Διαχείριση Προϊόντων</title>
 <style>
   :root { --blue:#0047ba; --navy:#061b72; --green:#2da884; --ink:#0f1a2e; --line:#e3e8f0; }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--ink); background:#f4f6fb; line-height:1.4; }
   header { background:var(--navy); color:#fff; padding:16px 18px; position:sticky; top:0; z-index:5; }
@@ -36,31 +36,40 @@
   .btn { display:block; width:100%; padding:15px; border:0; border-radius:11px; font-size:1rem;
     font-weight:700; color:#fff; background:var(--blue); cursor:pointer; margin-top:20px; }
   .btn:disabled { opacity:.55; }
+  .btn--ghost { background:#fff; color:var(--blue); border:1.5px solid var(--line); margin-top:10px; }
+  .btn--danger { background:#fff; color:#b3261e; border:1.5px solid #f5c2c0; margin-top:10px; }
   .msg { padding:12px 14px; border-radius:10px; font-size:.92rem; margin-top:14px; display:none; }
   .msg.ok { background:#eafaf4; color:#1d7a5c; display:block; }
   .msg.err { background:#fdeaea; color:#b3261e; display:block; }
   .hsec { font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:#7a8699; margin:6px 0 12px; font-weight:700; }
-  .item { display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); }
+  .filters { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; }
+  .filters button { flex:0 0 auto; padding:8px 12px; border:1.5px solid var(--line); background:#fff;
+    border-radius:20px; font-size:.85rem; font-weight:600; color:#5a6677; cursor:pointer; white-space:nowrap; }
+  .filters button.on { border-color:var(--blue); color:var(--blue); background:#eef4ff; }
+  .item { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--line); }
   .item:last-child { border-bottom:0; }
   .item img { width:52px; height:52px; border-radius:8px; object-fit:cover; background:#eef1f7; flex:0 0 auto; }
   .item .meta { flex:1; min-width:0; }
   .item .meta b { font-size:.95rem; display:block; }
   .item .meta small { color:#7a8699; }
-  .badge { display:inline-block; font-size:.7rem; padding:2px 7px; border-radius:20px; background:#eef1f7; color:#5a6677; margin-left:6px; }
+  .badge { display:inline-block; font-size:.7rem; padding:2px 7px; border-radius:20px; background:#eef1f7; color:#5a6677; margin-left:4px; }
   .badge.used { background:#fff3e0; color:#a85b00; }
-  .sold { padding:8px 12px; border:1.5px solid var(--line); background:#fff; border-radius:9px;
-    font-weight:600; font-size:.85rem; color:#b3261e; cursor:pointer; flex:0 0 auto; }
-  .sold.done { color:#7a8699; border-color:var(--line); }
+  .badge.sold { background:#fdeaea; color:#b3261e; }
+  .acts { display:flex; flex-direction:column; gap:6px; flex:0 0 auto; }
+  .acts button { padding:8px 10px; border:1.5px solid var(--line); background:#fff; border-radius:9px;
+    font-weight:600; font-size:.8rem; cursor:pointer; white-space:nowrap; }
+  .acts .del { color:#b3261e; border-color:#f5c2c0; }
   .muted { color:#7a8699; font-size:.9rem; }
   .gate { text-align:center; padding:40px 0; }
   .gate input { max-width:240px; margin:14px auto 0; text-align:center; }
+  .edit-banner { background:#eef4ff; border:1px solid #c5d7f5; color:var(--navy); padding:10px 12px;
+    border-radius:10px; font-size:.9rem; margin-bottom:12px; display:none; }
 </style>
 </head>
 <body>
-<header><b>Eurocall · Διαχείριση Προϊόντων</b><span>Ανέβασμα νέου / μεταχειρισμένου εξοπλισμού</span></header>
+<header><b>Eurocall · Διαχείριση Προϊόντων</b><span>Προσθήκη, επεξεργασία & αφαίρεση προϊόντων</span></header>
 <main>
 
-  <!-- ΠΥΛΗ ΚΩΔΙΚΟΥ -->
   <div class="card gate" id="gate">
     <div class="muted">Βάλτε τον κωδικό που σας δώσαμε για να συνεχίσετε.</div>
     <input type="text" id="code" inputmode="text" autocomplete="off" placeholder="Κωδικός" />
@@ -68,8 +77,9 @@
     <div class="msg" id="gateMsg"></div>
   </div>
 
-  <!-- ΦΟΡΜΑ -->
   <div class="card" id="formCard" style="display:none">
+    <div class="edit-banner" id="editBanner">Επεξεργασία προϊόντος — <button type="button" id="cancelEdit" style="border:0;background:none;color:var(--blue);font-weight:700;cursor:pointer;padding:0">Ακύρωση</button></div>
+
     <label>Κατηγορία</label>
     <select id="category"></select>
 
@@ -81,8 +91,8 @@
 
     <label>Κατάσταση</label>
     <div class="seg" id="condition">
-      <button type="button" data-v="used" class="on">Μεταχειρισμένο</button>
-      <button type="button" data-v="new">Καινούριο</button>
+      <button type="button" data-v="used">Μεταχειρισμένο</button>
+      <button type="button" data-v="new" class="on">Καινούριο</button>
     </div>
 
     <label>Φωτογραφίες (έως 4)</label>
@@ -97,9 +107,9 @@
     <div class="msg" id="formMsg"></div>
   </div>
 
-  <!-- ΛΙΣΤΑ ΠΡΟΪΟΝΤΩΝ -->
   <div class="card" id="listCard" style="display:none">
     <div class="hsec">Τα προϊόντα μου</div>
+    <div class="filters" id="filters"></div>
     <div id="list"><div class="muted">Φόρτωση…</div></div>
   </div>
 
@@ -115,10 +125,12 @@ const CATS = [
 ];
 const $ = (id) => document.getElementById(id);
 let code = localStorage.getItem('eurocall_admin_code') || '';
-let condition = 'used';
-let photos = []; // base64 data URLs (downscaled)
+let condition = 'new';
+let photos = [];
+let editingId = null;
+let allItems = [];
+let filterCat = 'all';
 
-// --- κλήση edge function ---
 async function call(action, extra) {
   const r = await fetch(FN, { method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ action, client_id: CLIENT_ID, code, ...extra }) });
@@ -127,7 +139,6 @@ async function call(action, extra) {
   return j;
 }
 
-// --- σμίκρυνση φωτό μέσω canvas (max 1600px, jpeg 0.82) ---
 function shrink(file) {
   return new Promise((res, rej) => {
     const img = new Image();
@@ -151,15 +162,45 @@ function renderThumbs() {
     b.onclick = () => { photos.splice(+b.dataset.i, 1); renderThumbs(); });
 }
 
-// --- εμφάνιση εφαρμογής μετά από σωστό κωδικό ---
+function resetForm() {
+  editingId = null;
+  $('editBanner').style.display = 'none';
+  $('name').value = '';
+  $('spec').value = '';
+  $('note').value = '';
+  photos = [];
+  renderThumbs();
+  condition = 'new';
+  document.querySelectorAll('#condition button').forEach((x) =>
+    x.classList.toggle('on', x.dataset.v === 'new'));
+  $('submitBtn').textContent = 'Ανέβασμα στο site';
+}
+
+function startEdit(it) {
+  editingId = it.id;
+  $('editBanner').style.display = 'block';
+  $('category').value = it.category_slug;
+  $('name').value = it.name;
+  $('spec').value = it.spec || '';
+  $('note').value = it.note || '';
+  condition = it.condition === 'used' ? 'used' : 'new';
+  document.querySelectorAll('#condition button').forEach((x) =>
+    x.classList.toggle('on', x.dataset.v === condition));
+  photos = (it.images || []).slice(0, 4);
+  renderThumbs();
+  $('submitBtn').textContent = 'Αποθήκευση αλλαγών';
+  $('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 async function unlock() {
   try {
-    await call('list', {}); // αν περάσει, ο κωδικός ισχύει
+    await call('list', {});
     localStorage.setItem('eurocall_admin_code', code);
     $('gate').style.display = 'none';
     $('formCard').style.display = '';
     $('listCard').style.display = '';
     $('category').innerHTML = CATS.map(([s,n]) => `<option value="${s}">${n}</option>`).join('');
+    renderFilters();
     loadList();
   } catch (e) {
     code = '';
@@ -168,35 +209,72 @@ async function unlock() {
   }
 }
 
+function renderFilters() {
+  $('filters').innerHTML =
+    `<button type="button" data-cat="all" class="${filterCat==='all'?'on':''}">Όλα</button>` +
+    CATS.map(([s,n]) => `<button type="button" data-cat="${s}" class="${filterCat===s?'on':''}">${n}</button>`).join('');
+  $('filters').querySelectorAll('button').forEach((b) => b.onclick = () => {
+    filterCat = b.dataset.cat;
+    renderFilters();
+    renderList();
+  });
+}
+
+function renderList() {
+  const items = filterCat === 'all' ? allItems : allItems.filter((it) => it.category_slug === filterCat);
+  if (!items.length) {
+    $('list').innerHTML = '<div class="muted">Δεν υπάρχουν προϊόντα σε αυτή την κατηγορία.</div>';
+    return;
+  }
+  $('list').innerHTML = items.map((it) => {
+    const sold = it.status === 'sold';
+    const cn = CATS.find(([s]) => s === it.category_slug);
+    const cat = cn ? cn[1] : it.category_slug;
+    return `<div class="item">
+      <img src="${(it.images&&it.images[0])||''}" alt=""/>
+      <div class="meta"><b>${it.name}</b>
+        <small>${cat}</small>
+        <span class="badge ${it.condition}">${it.condition==='used'?'Μεταχ/νο':'Καινούριο'}</span>
+        ${sold?'<span class="badge sold">Πουλήθηκε</span>':''}</div>
+      <div class="acts">
+        <button type="button" data-edit="${it.id}">Επεξεργασία</button>
+        <button type="button" data-sold="${it.id}" data-status="${it.status}">${sold?'↩ Επαναφορά':'Πουλήθηκε'}</button>
+        <button type="button" class="del" data-del="${it.id}">Διαγραφή</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  $('list').querySelectorAll('[data-edit]').forEach((b) => b.onclick = () => {
+    const it = allItems.find((x) => x.id === b.dataset.edit);
+    if (it) startEdit(it);
+  });
+  $('list').querySelectorAll('[data-sold]').forEach((b) => b.onclick = async () => {
+    const next = b.dataset.status === 'sold' ? 'available' : 'sold';
+    b.disabled = true;
+    try { await call('set_status', { id: b.dataset.sold, status: next }); await loadList(); }
+    catch { b.disabled = false; alert('Κάτι πήγε στραβά.'); }
+  });
+  $('list').querySelectorAll('[data-del]').forEach((b) => b.onclick = async () => {
+    if (!confirm('Οριστική διαγραφή; Το προϊόν θα φύγει από τη διαχείριση και το site.')) return;
+    b.disabled = true;
+    try { await call('delete', { id: b.dataset.del }); await loadList(); if (editingId === b.dataset.del) resetForm(); }
+    catch { b.disabled = false; alert('Κάτι πήγε στραβά.'); }
+  });
+}
+
 async function loadList() {
   try {
     const { items } = await call('list', {});
-    if (!items.length) { $('list').innerHTML = '<div class="muted">Δεν έχετε ανεβάσει προϊόντα ακόμη.</div>'; return; }
-    $('list').innerHTML = items.map((it) => {
-      const sold = it.status === 'sold';
-      const cn = CATS.find(([s]) => s === it.category_slug); const cat = cn ? cn[1] : '';
-      return `<div class="item">
-        <img src="${(it.images&&it.images[0])||''}" alt=""/>
-        <div class="meta"><b>${it.name}</b>
-          <small>${cat}</small>
-          <span class="badge ${it.condition}">${it.condition==='used'?'Μεταχ/νο':'Καινούριο'}</span>
-          ${sold?'<span class="badge">Πουλήθηκε</span>':''}</div>
-        <button class="sold ${sold?'done':''}" data-id="${it.id}" data-status="${it.status}">
-          ${sold?'↩ Επαναφορά':'Πουλήθηκε'}</button>
-      </div>`;
-    }).join('');
-    $('list').querySelectorAll('.sold').forEach((b) => b.onclick = async () => {
-      const next = b.dataset.status === 'sold' ? 'available' : 'sold';
-      b.disabled = true;
-      try { await call('set_status', { id: b.dataset.id, status: next }); loadList(); }
-      catch { b.disabled = false; alert('Κάτι πήγε στραβά.'); }
-    });
-  } catch { $('list').innerHTML = '<div class="muted">Δεν φορτώθηκαν τα προϊόντα.</div>'; }
+    allItems = items || [];
+    renderList();
+  } catch {
+    $('list').innerHTML = '<div class="muted">Δεν φορτώθηκαν τα προϊόντα.</div>';
+  }
 }
 
-// --- events ---
 $('codeBtn').onclick = () => { code = $('code').value.trim(); if (code) unlock(); };
 $('code').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('codeBtn').click(); });
+$('cancelEdit').onclick = resetForm;
 
 document.querySelectorAll('#condition button').forEach((b) => b.onclick = () => {
   condition = b.dataset.v;
@@ -215,22 +293,41 @@ $('submitBtn').onclick = async () => {
   const name = $('name').value.trim();
   const category_slug = $('category').value;
   if (!name) { showForm('err', 'Συμπληρώστε όνομα προϊόντος.'); return; }
-  if (!photos.length) { showForm('err', 'Προσθέστε τουλάχιστον μία φωτογραφία.'); return; }
-  $('submitBtn').disabled = true; $('submitBtn').textContent = 'Ανεβαίνει…';
+  if (!photos.length && !editingId) { showForm('err', 'Προσθέστε τουλάχιστον μία φωτογραφία.'); return; }
+  $('submitBtn').disabled = true;
+  const prev = $('submitBtn').textContent;
+  $('submitBtn').textContent = editingId ? 'Αποθήκευση…' : 'Ανεβαίνει…';
   try {
-    await call('submit', { category_slug, name, spec: $('spec').value.trim(),
-      condition, note: $('note').value.trim(), images: photos });
-    showForm('ok', '✓ Ανέβηκε! Θα φανεί στο site σε λίγο.');
-    $('name').value = ''; $('spec').value = ''; $('note').value = ''; photos = []; renderThumbs();
+    const payload = {
+      category_slug, name,
+      spec: $('spec').value.trim(),
+      condition,
+      note: $('note').value.trim(),
+    };
+    const newPhotos = photos.filter((p) => p.startsWith('data:'));
+    if (newPhotos.length) payload.images = newPhotos;
+    else if (photos.length) payload.image_urls = photos;
+
+    if (editingId) {
+      await call('update', { id: editingId, ...payload });
+      showForm('ok', '✓ Αποθηκεύτηκε!');
+    } else {
+      if (!payload.images && !payload.image_urls) { showForm('err', 'Προσθέστε φωτογραφία.'); return; }
+      await call('submit', payload);
+      showForm('ok', '✓ Ανέβηκε! Θα φανεί στο site σε λίγο.');
+    }
+    resetForm();
     loadList();
   } catch (e) { showForm('err', 'Σφάλμα: ' + e.message); }
-  $('submitBtn').disabled = false; $('submitBtn').textContent = 'Ανέβασμα στο site';
+  $('submitBtn').disabled = false;
+  $('submitBtn').textContent = prev;
 };
 
-function showForm(kind, text) { const m = $('formMsg'); m.className = 'msg ' + kind; m.textContent = text;
-  if (kind === 'ok') setTimeout(() => { m.className = 'msg'; }, 5000); }
+function showForm(kind, text) {
+  const m = $('formMsg'); m.className = 'msg ' + kind; m.textContent = text;
+  if (kind === 'ok') setTimeout(() => { m.className = 'msg'; }, 5000);
+}
 
-// auto-unlock αν υπάρχει αποθηκευμένος κωδικός
 if (code) unlock();
 </script>
 </body>

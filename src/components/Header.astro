@@ -1,5 +1,5 @@
 ---
-import { categories } from '../data/catalog.js';
+import { categories, productCategories } from '../data/catalog.js';
 const { current } = Astro.props;
 ---
 <header class="hdr">
@@ -17,12 +17,16 @@ const { current } = Astro.props;
         </button>
         <div class="mega" id="mega">
           <div class="mega__in">
-            {categories.map((c) => (
+            {productCategories.map((c) => (
               <a class="mega-cat" href={`/proionta/${c.slug}`}>
                 <div class="mega-cat__t">{c.name}</div>
                 <div class="mega-cat__d">{c.tagline}</div>
               </a>
             ))}
+            <a class="mega-cat mega-cat--used" href="/proionta/metaxeirismena">
+              <div class="mega-cat__t">Μεταχειρισμένα</div>
+              <div class="mega-cat__d">Ελεγμένος εξοπλισμός — διαθέσιμος τώρα</div>
+            </a>
           </div>
         </div>
       </div>
@@ -59,9 +63,10 @@ const { current } = Astro.props;
   <nav class="mmenu__body" aria-label="Πλοήγηση κινητού">
     <span class="mmenu__label">Κατηγορίες προϊόντων</span>
     <div class="mmenu__cats">
-      {categories.map((c) => (
+      {productCategories.map((c) => (
         <a class="mmenu__cat" href={`/proionta/${c.slug}`}>{c.name}<span aria-hidden="true">→</span></a>
       ))}
+      <a class="mmenu__cat" href="/proionta/metaxeirismena">Μεταχειρισμένα<span aria-hidden="true">→</span></a>
     </div>
     <span class="mmenu__label">Εταιρεία</span>
     <a class="mmenu__link" href="/proionta/anoxeidotes-kataskeves#custom">Custom Κατασκευές</a>
