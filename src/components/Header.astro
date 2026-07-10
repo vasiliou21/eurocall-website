@@ -1,5 +1,5 @@
 ---
-import { categories, productCategories } from '../data/catalog.js';
+import LiveCategories from './LiveCategories.astro';
 const { current } = Astro.props;
 ---
 <header class="hdr">
@@ -16,17 +16,8 @@ const { current } = Astro.props;
           <svg class="nav__chev" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4"/></svg>
         </button>
         <div class="mega" id="mega">
-          <div class="mega__in">
-            {productCategories.map((c) => (
-              <a class="mega-cat" href={`/proionta/${c.slug}`}>
-                <div class="mega-cat__t">{c.name}</div>
-                <div class="mega-cat__d">{c.tagline}</div>
-              </a>
-            ))}
-            <a class="mega-cat mega-cat--used" href="/proionta/metaxeirismena">
-              <div class="mega-cat__t">Μεταχειρισμένα</div>
-              <div class="mega-cat__d">Ελεγμένος εξοπλισμός — διαθέσιμος τώρα</div>
-            </a>
+          <div class="mega__in" id="megaCats">
+            <div class="muted" style="padding:12px;font-size:.9rem">Φόρτωση…</div>
           </div>
         </div>
       </div>
@@ -62,11 +53,8 @@ const { current } = Astro.props;
   </div>
   <nav class="mmenu__body" aria-label="Πλοήγηση κινητού">
     <span class="mmenu__label">Κατηγορίες προϊόντων</span>
-    <div class="mmenu__cats">
-      {productCategories.map((c) => (
-        <a class="mmenu__cat" href={`/proionta/${c.slug}`}>{c.name}<span aria-hidden="true">→</span></a>
-      ))}
-      <a class="mmenu__cat" href="/proionta/metaxeirismena">Μεταχειρισμένα<span aria-hidden="true">→</span></a>
+    <div class="mmenu__cats" id="mmenuCats">
+      <div class="muted" style="padding:8px 0">Φόρτωση…</div>
     </div>
     <span class="mmenu__label">Εταιρεία</span>
     <a class="mmenu__link" href="/proionta/anoxeidotes-kataskeves#custom">Custom Κατασκευές</a>
@@ -120,3 +108,5 @@ const { current } = Astro.props;
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   })();
 </script>
+<LiveCategories mode="mega" target="#megaCats" />
+<LiveCategories mode="mobile" target="#mmenuCats" />

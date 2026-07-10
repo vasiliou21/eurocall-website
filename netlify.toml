@@ -5,3 +5,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/proionta/*"
+  to = "/proionta/c"
+  status = 200

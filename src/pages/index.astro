@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import LiveProducts from '../components/LiveProducts.astro';
-import { categories, productCategories } from '../data/catalog.js';
+import LiveCategories from '../components/LiveCategories.astro';
 ---
 <Base current="home">
   <!-- HERO -->
@@ -40,20 +40,12 @@ import { categories, productCategories } from '../data/catalog.js';
       <div class="sec-head">
         <span class="eyebrow">Κατηγορίες προϊόντων</span>
         <h2>Όλη η κουζίνα σας, από έναν προμηθευτή</h2>
-        <p>Δέκα βασικές κατηγορίες εξοπλισμού εστίασης — με συμβουλή πριν την αγορά και υποστήριξη μετά.</p>
+        <p>Οι κατηγορίες εξοπλισμού που έχουμε αυτή τη στιγμή — με συμβουλή πριν την αγορά και υποστήριξη μετά.</p>
       </div>
-      <div class="cats">
-        {productCategories.map((c, i) => (
-          <a href={`/proionta/${c.slug}`} class="catrow">
-            <div class="catrow__img"><img src={c.hero} alt={c.name} loading="lazy" /></div>
-            <div class="catrow__body">
-              <div class="catrow__top"><span class="catrow__num">{String(i + 1).padStart(2, '0')}</span><h3>{c.name}</h3></div>
-              <p class="catrow__desc">{c.intro}</p>
-              <span class="catrow__link">Δείτε προϊόντα →</span>
-            </div>
-          </a>
-        ))}
+      <div class="cats" id="homeCats">
+        <p style="color:var(--txt-body)">Φόρτωση κατηγοριών…</p>
       </div>
+      <LiveCategories mode="home" target="#homeCats" />
     </div>
   </section>
 

@@ -1,6 +1,6 @@
 ---
-import { categories, company } from '../data/catalog.js';
-const firstCols = categories.slice(0, 5);
+import { company } from '../data/catalog.js';
+import LiveCategories from './LiveCategories.astro';
 ---
 <footer class="ftr">
   <div class="wrap">
@@ -11,9 +11,8 @@ const firstCols = categories.slice(0, 5);
       </div>
       <div>
         <h4>Προϊόντα</h4>
-        <ul>
-          {firstCols.map((c) => (<li><a href={`/proionta/${c.slug}`}>{c.name}</a></li>))}
-        </ul>
+        <ul id="footerCats"><li class="muted">Φόρτωση…</li></ul>
+        <LiveCategories mode="footer" target="#footerCats" limit={5} />
       </div>
       <div>
         <h4>Εταιρεία</h4>

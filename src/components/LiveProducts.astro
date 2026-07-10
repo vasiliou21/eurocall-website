@@ -1,27 +1,20 @@
 ---
-// Istos Engine — Catalog module: live product grid (μόνη πηγή προϊόντων).
-//
-// Props:
-//   target       — CSS selector του grid
-//   mode         — 'category' | 'used'
-//   slug         — category slug (required for mode category)
-//   hideSelector — optional: κρύβει section αν άδειο (homepage used block)
-//   emptyMessage — optional custom empty text
+// Istos Engine — live product grid (μόνη πηγή προϊόντων).
 import { ISTOS } from '../data/istos.js';
-import { categories } from '../data/catalog.js';
+import { virtualCategory } from '../data/catalog.js';
 const {
   target,
   mode = 'category',
   slug = '',
   hideSelector = '',
   emptyMessage = 'Δεν υπάρχουν διαθέσιμα προϊόντα σε αυτή την κατηγορία αυτή τη στιγμή.',
+  dynamicSlug = false,
 } = Astro.props;
-const names = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
 ---
 <div class="live-loading" data-live-loading={target} style="padding:24px 0;color:var(--txt-body);font-size:.95rem">
   Φόρτωση προϊόντων…
 </div>
-<script is:inline define:vars={{ ISTOS, names, target, mode, slug, hideSelector, emptyMessage }}>
+<script is:inline define:vars={{ ISTOS, virtualCategory, target, mode, slug, hideSelector, emptyMessage, dynamicSlug }}>
   (async function () {
     const loading = document.querySelector('[data-live-loading="' + target + '"]');
     const hideEmpty = () => {
@@ -35,29 +28,59 @@ const names = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
       if (h) h.style.display = '';
     };
 
+    let runMode = mode;
+    let runSlug = slug;
+    let msg = emptyMessage;
+    if (dynamicSlug) {
+      for (let i = 0; i < 80 && !window.__euroCatSlug; i++)
+        await new Promise((r) => setTimeout(r, 25));
+      runSlug = window.__euroCatSlug || '';
+      if (runSlug === virtualCategory.slug) {
+        runMode = 'used';
+        msg = 'Δεν υπάρχουν διαθέσιμα μεταχειρισμένα αυτή τη στιγμή. Επικοινωνήστε μαζί μας — η διαθεσιμότητα αλλάζει συχνά.';
+      }
+      if (!runSlug) {
+        if (loading) loading.textContent = 'Η κατηγορία δεν βρέθηκε.';
+        return;
+      }
+    }
+
+    const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    const loadNames = async () => {
+      if (window.__euroCats) return window.__euroCats.names;
+      const q = `${ISTOS.url}/rest/v1/catalog_categories` +
+        `?select=slug,name&client_id=eq.${ISTOS.clientId}&status=eq.active`;
+      const res = await fetch(q, { headers: { apikey: ISTOS.anon } });
+      const rows = res.ok ? await res.json() : [];
+      const names = {};
+      for (const c of rows) names[c.slug] = c.name;
+      names[virtualCategory.slug] = virtualCategory.name;
+      return names;
+    };
+
     try {
+      const names = await loadNames();
       let q = `${ISTOS.url}/rest/v1/catalog_items` +
         `?select=category_slug,name,spec,condition,images,sort_order,created_at` +
         `&client_id=eq.${ISTOS.clientId}&status=eq.available` +
         `&order=sort_order.asc,created_at.desc`;
-      if (mode === 'category') q += `&category_slug=eq.${encodeURIComponent(slug)}`;
-      if (mode === 'used') q += `&condition=eq.used`;
+      if (runMode === 'category') q += `&category_slug=eq.${encodeURIComponent(runSlug)}`;
+      if (runMode === 'used') q += `&condition=eq.used`;
 
       const res = await fetch(q, { headers: { apikey: ISTOS.anon } });
       if (!res.ok) { hideEmpty(); if (loading) loading.textContent = 'Δεν φορτώθηκαν τα προϊόντα.'; return; }
       const rows = await res.json();
       if (!Array.isArray(rows) || !rows.length) {
         hideEmpty();
-        if (loading) loading.textContent = emptyMessage;
+        if (loading) loading.textContent = msg;
         return;
       }
 
       const grid = document.querySelector(target);
       if (!grid) { hideEmpty(); return; }
       if (loading) loading.remove();
-
-      const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) =>
-        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
       const frag = document.createDocumentFragment();
       for (const p of rows) {

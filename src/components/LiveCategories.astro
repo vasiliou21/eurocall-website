@@ -1,0 +1,96 @@
+---
+// Istos Engine — live category lists (Supabase catalog_categories).
+// Modes: mega | mobile | home | other
+import { ISTOS } from '../data/istos.js';
+import { virtualCategory, defaultHero } from '../data/catalog.js';
+const { mode = 'home', target, excludeSlug = '', limit = 4 } = Astro.props;
+---
+<script is:inline define:vars={{ ISTOS, virtualCategory, defaultHero, mode, target, excludeSlug, limit }}>
+  (async function () {
+    const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    const loadCats = async () => {
+      if (window.__euroCats) return window.__euroCats;
+      const q = `${ISTOS.url}/rest/v1/catalog_categories` +
+        `?select=slug,name,tagline,intro,hero,sort_order` +
+        `&client_id=eq.${ISTOS.clientId}&status=eq.active` +
+        `&order=sort_order.asc,created_at.asc`;
+      const res = await fetch(q, { headers: { apikey: ISTOS.anon } });
+      const rows = res.ok ? await res.json() : [];
+      const names = {};
+      const bySlug = {};
+      for (const c of rows) { names[c.slug] = c.name; bySlug[c.slug] = c; }
+      names[virtualCategory.slug] = virtualCategory.name;
+      bySlug[virtualCategory.slug] = virtualCategory;
+      window.__euroCats = { rows, names, bySlug };
+      return window.__euroCats;
+    };
+
+    try {
+      const { rows, bySlug } = await loadCats();
+      const el = document.querySelector(target);
+      if (!el) return;
+
+      if (mode === 'mega') {
+        let html = rows.map((c) =>
+          `<a class="mega-cat" href="/proionta/${esc(c.slug)}">` +
+          `<div class="mega-cat__t">${esc(c.name)}</div>` +
+          `<div class="mega-cat__d">${esc(c.tagline || '')}</div></a>`).join('');
+        html += `<a class="mega-cat mega-cat--used" href="/proionta/${esc(virtualCategory.slug)}">` +
+          `<div class="mega-cat__t">${esc(virtualCategory.name)}</div>` +
+          `<div class="mega-cat__d">${esc(virtualCategory.tagline)}</div></a>`;
+        el.innerHTML = html;
+        return;
+      }
+
+      if (mode === 'mobile') {
+        let html = rows.map((c) =>
+          `<a class="mmenu__cat" href="/proionta/${esc(c.slug)}">${esc(c.name)}<span aria-hidden="true">→</span></a>`).join('');
+        html += `<a class="mmenu__cat" href="/proionta/${esc(virtualCategory.slug)}">${esc(virtualCategory.name)}<span aria-hidden="true">→</span></a>`;
+        el.innerHTML = html;
+        return;
+      }
+
+      if (mode === 'home') {
+        if (!rows.length) {
+          el.innerHTML = '<p style="color:var(--txt-body)">Δεν υπάρχουν κατηγορίες αυτή τη στιγμή.</p>';
+          return;
+        }
+        el.innerHTML = rows.map((c, i) => {
+          const hero = c.hero || defaultHero;
+          return `<a href="/proionta/${esc(c.slug)}" class="catrow">` +
+            `<div class="catrow__img"><img src="${esc(hero)}" alt="${esc(c.name)}" loading="lazy" /></div>` +
+            `<div class="catrow__body">` +
+            `<div class="catrow__top"><span class="catrow__num">${String(i + 1).padStart(2, '0')}</span><h3>${esc(c.name)}</h3></div>` +
+            `<p class="catrow__desc">${esc(c.intro || c.tagline || '')}</p>` +
+            `<span class="catrow__link">Δείτε προϊόντα →</span></div></a>`;
+        }).join('');
+        return;
+      }
+
+      if (mode === 'footer') {
+        el.innerHTML = rows.slice(0, limit).map((c) =>
+          `<li><a href="/proionta/${esc(c.slug)}">${esc(c.name)}</a></li>`).join('');
+        return;
+      }
+
+      if (mode === 'other') {
+        const ex = excludeSlug || window.__euroCatSlug || '';
+        const list = rows.filter((c) => c.slug !== ex).slice(0, limit);
+        el.innerHTML = list.map((c) => {
+          const hero = c.hero || defaultHero;
+          return `<a href="/proionta/${esc(c.slug)}" class="catrow">` +
+            `<div class="catrow__img"><img src="${esc(hero)}" alt="${esc(c.name)}" loading="lazy" /></div>` +
+            `<div class="catrow__body">` +
+            `<div class="catrow__top"><h3>${esc(c.name)}</h3></div>` +
+            `<p class="catrow__desc">${esc(c.intro || '')}</p>` +
+            `<span class="catrow__link">Δείτε προϊόντα →</span></div></a>`;
+        }).join('');
+      }
+    } catch (_) {
+      const el = document.querySelector(target);
+      if (el && mode === 'home') el.innerHTML = '<p style="color:var(--txt-body)">Δεν φορτώθηκαν οι κατηγορίες.</p>';
+    }
+  })();
+</script>

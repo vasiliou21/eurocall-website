@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Eurocall — Διαχείριση Προϊόντων</title>
+<title>Eurocall — Διαχείριση</title>
 <style>
   :root { --blue:#0047ba; --navy:#061b72; --green:#2da884; --ink:#0f1a2e; --line:#e3e8f0; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -25,6 +25,10 @@
   .seg button { flex:1; padding:13px; border:1.5px solid var(--line); background:#fff; border-radius:10px;
     font-size:.95rem; font-weight:600; color:#5a6677; cursor:pointer; }
   .seg button.on { border-color:var(--green); background:#eafaf4; color:#1d7a5c; }
+  .tabs { display:flex; gap:8px; margin-bottom:18px; }
+  .tabs button { flex:1; padding:12px; border:1.5px solid var(--line); background:#fff; border-radius:11px;
+    font-weight:700; color:#5a6677; cursor:pointer; }
+  .tabs button.on { border-color:var(--blue); color:var(--blue); background:#eef4ff; }
   .photos { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
   .thumb { position:relative; width:74px; height:74px; border-radius:9px; overflow:hidden; border:1px solid var(--line); }
   .thumb img { width:100%; height:100%; object-fit:cover; }
@@ -36,8 +40,6 @@
   .btn { display:block; width:100%; padding:15px; border:0; border-radius:11px; font-size:1rem;
     font-weight:700; color:#fff; background:var(--blue); cursor:pointer; margin-top:20px; }
   .btn:disabled { opacity:.55; }
-  .btn--ghost { background:#fff; color:var(--blue); border:1.5px solid var(--line); margin-top:10px; }
-  .btn--danger { background:#fff; color:#b3261e; border:1.5px solid #f5c2c0; margin-top:10px; }
   .msg { padding:12px 14px; border-radius:10px; font-size:.92rem; margin-top:14px; display:none; }
   .msg.ok { background:#eafaf4; color:#1d7a5c; display:block; }
   .msg.err { background:#fdeaea; color:#b3261e; display:block; }
@@ -64,10 +66,11 @@
   .gate input { max-width:240px; margin:14px auto 0; text-align:center; }
   .edit-banner { background:#eef4ff; border:1px solid #c5d7f5; color:var(--navy); padding:10px 12px;
     border-radius:10px; font-size:.9rem; margin-bottom:12px; display:none; }
+  .hint { font-size:.82rem; color:#7a8699; margin-top:4px; }
 </style>
 </head>
 <body>
-<header><b>Eurocall · Διαχείριση Προϊόντων</b><span>Προσθήκη, επεξεργασία & αφαίρεση προϊόντων</span></header>
+<header><b>Eurocall · Διαχείριση</b><span>Προϊόντα & κατηγορίες στο site</span></header>
 <main>
 
   <div class="card gate" id="gate">
@@ -77,59 +80,82 @@
     <div class="msg" id="gateMsg"></div>
   </div>
 
-  <div class="card" id="formCard" style="display:none">
-    <div class="edit-banner" id="editBanner">Επεξεργασία προϊόντος — <button type="button" id="cancelEdit" style="border:0;background:none;color:var(--blue);font-weight:700;cursor:pointer;padding:0">Ακύρωση</button></div>
-
-    <label>Κατηγορία</label>
-    <select id="category"></select>
-
-    <label>Όνομα προϊόντος</label>
-    <input type="text" id="name" placeholder="π.χ. Ψυγείο Θάλαμος Συντήρησης 360L" />
-
-    <label>Χαρακτηριστικά (μία γραμμή)</label>
-    <input type="text" id="spec" placeholder="π.χ. Inox · 5 ράφια · Ψηφιακός θερμοστάτης" />
-
-    <label>Κατάσταση</label>
-    <div class="seg" id="condition">
-      <button type="button" data-v="used">Μεταχειρισμένο</button>
-      <button type="button" data-v="new" class="on">Καινούριο</button>
+  <div id="app" style="display:none">
+    <div class="tabs">
+      <button type="button" id="tabProducts" class="on">Προϊόντα</button>
+      <button type="button" id="tabCategories">Κατηγορίες</button>
     </div>
 
-    <label>Φωτογραφίες (έως 4)</label>
-    <div class="photos" id="thumbs"></div>
-    <label class="photo-add" for="photo">📷 Προσθήκη φωτογραφίας</label>
-    <input type="file" id="photo" accept="image/*" capture="environment" multiple hidden />
+    <div id="panelProducts">
+      <div class="card" id="formCard">
+        <div class="edit-banner" id="editBanner">Επεξεργασία προϊόντος — <button type="button" id="cancelEdit" style="border:0;background:none;color:var(--blue);font-weight:700;cursor:pointer;padding:0">Ακύρωση</button></div>
+        <label>Κατηγορία</label>
+        <select id="category"></select>
+        <label>Όνομα προϊόντος</label>
+        <input type="text" id="name" placeholder="π.χ. Ψυγείο Θάλαμος Συντήρησης 360L" />
+        <label>Χαρακτηριστικά (μία γραμμή)</label>
+        <input type="text" id="spec" placeholder="π.χ. Inox · 5 ράφια · Ψηφιακός θερμοστάτης" />
+        <label>Κατάσταση</label>
+        <div class="seg" id="condition">
+          <button type="button" data-v="used">Μεταχειρισμένο</button>
+          <button type="button" data-v="new" class="on">Καινούριο</button>
+        </div>
+        <label>Φωτογραφίες (έως 4)</label>
+        <div class="photos" id="thumbs"></div>
+        <label class="photo-add" for="photo">📷 Προσθήκη φωτογραφίας</label>
+        <input type="file" id="photo" accept="image/*" capture="environment" multiple hidden />
+        <label>Σχόλιο (προαιρετικό)</label>
+        <textarea id="note" placeholder="π.χ. 1 τεμάχιο, άριστη κατάσταση"></textarea>
+        <button class="btn" id="submitBtn">Ανέβασμα στο site</button>
+        <div class="msg" id="formMsg"></div>
+      </div>
+      <div class="card" id="listCard">
+        <div class="hsec">Τα προϊόντα μου</div>
+        <div class="filters" id="filters"></div>
+        <div id="list"><div class="muted">Φόρτωση…</div></div>
+      </div>
+    </div>
 
-    <label>Σχόλιο / διαθεσιμότητα (προαιρετικό)</label>
-    <textarea id="note" placeholder="π.χ. 1 τεμάχιο, άριστη κατάσταση"></textarea>
-
-    <button class="btn" id="submitBtn">Ανέβασμα στο site</button>
-    <div class="msg" id="formMsg"></div>
-  </div>
-
-  <div class="card" id="listCard" style="display:none">
-    <div class="hsec">Τα προϊόντα μου</div>
-    <div class="filters" id="filters"></div>
-    <div id="list"><div class="muted">Φόρτωση…</div></div>
+    <div id="panelCategories" style="display:none">
+      <div class="card" id="catFormCard">
+        <div class="edit-banner" id="catEditBanner">Επεξεργασία κατηγορίας — <button type="button" id="cancelCatEdit" style="border:0;background:none;color:var(--blue);font-weight:700;cursor:pointer;padding:0">Ακύρωση</button></div>
+        <label>Όνομα κατηγορίας</label>
+        <input type="text" id="catName" placeholder="π.χ. Ψύξη" />
+        <label>Κωδικός (για το link)</label>
+        <input type="text" id="catSlug" placeholder="π.χ. psyxi" />
+        <p class="hint">Μόνο λατινικά, παύλες. Αφήστε κενό για αυτόματο από το όνομα.</p>
+        <label>Σύντομη περιγραφή (προαιρετικό)</label>
+        <input type="text" id="catTagline" placeholder="π.χ. Θάλαμοι, βιτρίνες & κατάψυξη" />
+        <label>Κείμενο σελίδας (προαιρετικό)</label>
+        <textarea id="catIntro" placeholder="Μία πρόταση για τη σελίδα κατηγορίας"></textarea>
+        <label>Εικόνα κατηγορίας (προαιρετικό)</label>
+        <div class="photos" id="catThumb"></div>
+        <label class="photo-add" for="catPhoto">📷 Προσθήκη εικόνας</label>
+        <input type="file" id="catPhoto" accept="image/*" capture="environment" hidden />
+        <button class="btn" id="catSubmitBtn">Αποθήκευση κατηγορίας</button>
+        <div class="msg" id="catFormMsg"></div>
+      </div>
+      <div class="card">
+        <div class="hsec">Οι κατηγορίες μου</div>
+        <div id="catList"><div class="muted">Φόρτωση…</div></div>
+      </div>
+    </div>
   </div>
 
 </main>
 <script>
 const FN = 'https://buwmhccjxuimhnscsujm.supabase.co/functions/v1/catalog';
 const CLIENT_ID = 'd011289f-1382-4229-b3a5-74f8c602f77d';
-const CATS = [
-  ['fournoi','Φούρνοι'], ['psyxi','Ψύξη'], ['anoxeidotes-kataskeves','Ανοξείδωτες Κατασκευές'],
-  ['psisimatos','Συσκευές Ψησίματος'], ['pagomixanes','Παγομηχανές'], ['plyntiria','Πλυντήρια'],
-  ['epexergasia-kreatos','Επεξεργασία Κρέατος'], ['bar-kafe','Μπαρ & Καφές'],
-  ['bain-marie','Bain Marie & Buffet'], ['blender-stiftes','Μπλέντερ & Στίφτες'],
-];
 const $ = (id) => document.getElementById(id);
 let code = localStorage.getItem('eurocall_admin_code') || '';
 let condition = 'new';
 let photos = [];
 let editingId = null;
 let allItems = [];
+let allCategories = [];
 let filterCat = 'all';
+let editingCatId = null;
+let catHero = '';
 
 async function call(action, extra) {
   const r = await fetch(FN, { method:'POST', headers:{'Content-Type':'application/json'},
@@ -137,6 +163,11 @@ async function call(action, extra) {
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error || 'σφάλμα');
   return j;
+}
+
+function slugify(s) {
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48);
 }
 
 function shrink(file) {
@@ -155,6 +186,13 @@ function shrink(file) {
   });
 }
 
+function catMap() { return allCategories.map((c) => [c.slug, c.name]); }
+
+function fillCategorySelect() {
+  $('category').innerHTML = allCategories.map((c) =>
+    `<option value="${c.slug}">${c.name}</option>`).join('');
+}
+
 function renderThumbs() {
   $('thumbs').innerHTML = photos.map((src, i) =>
     `<div class="thumb"><img src="${src}"/><b data-i="${i}">×</b></div>`).join('');
@@ -162,18 +200,31 @@ function renderThumbs() {
     b.onclick = () => { photos.splice(+b.dataset.i, 1); renderThumbs(); });
 }
 
+function renderCatThumb() {
+  $('catThumb').innerHTML = catHero
+    ? `<div class="thumb"><img src="${catHero}"/><b id="rmCatHero">×</b></div>` : '';
+  const rm = $('rmCatHero');
+  if (rm) rm.onclick = () => { catHero = ''; renderCatThumb(); };
+}
+
 function resetForm() {
   editingId = null;
   $('editBanner').style.display = 'none';
-  $('name').value = '';
-  $('spec').value = '';
-  $('note').value = '';
-  photos = [];
-  renderThumbs();
+  $('name').value = ''; $('spec').value = ''; $('note').value = '';
+  photos = []; renderThumbs();
   condition = 'new';
   document.querySelectorAll('#condition button').forEach((x) =>
     x.classList.toggle('on', x.dataset.v === 'new'));
   $('submitBtn').textContent = 'Ανέβασμα στο site';
+}
+
+function resetCatForm() {
+  editingCatId = null;
+  $('catEditBanner').style.display = 'none';
+  $('catName').value = ''; $('catSlug').value = '';
+  $('catTagline').value = ''; $('catIntro').value = '';
+  catHero = ''; renderCatThumb();
+  $('catSubmitBtn').textContent = 'Αποθήκευση κατηγορίας';
 }
 
 function startEdit(it) {
@@ -189,38 +240,42 @@ function startEdit(it) {
   photos = (it.images || []).slice(0, 4);
   renderThumbs();
   $('submitBtn').textContent = 'Αποθήκευση αλλαγών';
-  $('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('panelProducts').scrollIntoView({ behavior: 'smooth' });
 }
 
-async function unlock() {
-  try {
-    await call('list', {});
-    localStorage.setItem('eurocall_admin_code', code);
-    $('gate').style.display = 'none';
-    $('formCard').style.display = '';
-    $('listCard').style.display = '';
-    $('category').innerHTML = CATS.map(([s,n]) => `<option value="${s}">${n}</option>`).join('');
-    renderFilters();
-    loadList();
-  } catch (e) {
-    code = '';
-    $('gateMsg').className = 'msg err';
-    $('gateMsg').textContent = 'Λάθος κωδικός. Δοκιμάστε ξανά.';
-  }
+function startCatEdit(c) {
+  editingCatId = c.id;
+  $('catEditBanner').style.display = 'block';
+  $('catName').value = c.name;
+  $('catSlug').value = c.slug;
+  $('catTagline').value = c.tagline || '';
+  $('catIntro').value = c.intro || '';
+  catHero = c.hero || '';
+  renderCatThumb();
+  $('catSubmitBtn').textContent = 'Αποθήκευση αλλαγών';
+  $('catFormCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function loadCategories() {
+  const { categories } = await call('list_categories', {});
+  allCategories = categories || [];
+  fillCategorySelect();
+  renderFilters();
+  renderCatList();
 }
 
 function renderFilters() {
+  const CATS = catMap();
   $('filters').innerHTML =
     `<button type="button" data-cat="all" class="${filterCat==='all'?'on':''}">Όλα</button>` +
     CATS.map(([s,n]) => `<button type="button" data-cat="${s}" class="${filterCat===s?'on':''}">${n}</button>`).join('');
   $('filters').querySelectorAll('button').forEach((b) => b.onclick = () => {
-    filterCat = b.dataset.cat;
-    renderFilters();
-    renderList();
+    filterCat = b.dataset.cat; renderFilters(); renderList();
   });
 }
 
 function renderList() {
+  const CATS = catMap();
   const items = filterCat === 'all' ? allItems : allItems.filter((it) => it.category_slug === filterCat);
   if (!items.length) {
     $('list').innerHTML = '<div class="muted">Δεν υπάρχουν προϊόντα σε αυτή την κατηγορία.</div>';
@@ -232,18 +287,15 @@ function renderList() {
     const cat = cn ? cn[1] : it.category_slug;
     return `<div class="item">
       <img src="${(it.images&&it.images[0])||''}" alt=""/>
-      <div class="meta"><b>${it.name}</b>
-        <small>${cat}</small>
+      <div class="meta"><b>${it.name}</b><small>${cat}</small>
         <span class="badge ${it.condition}">${it.condition==='used'?'Μεταχ/νο':'Καινούριο'}</span>
         ${sold?'<span class="badge sold">Πουλήθηκε</span>':''}</div>
       <div class="acts">
         <button type="button" data-edit="${it.id}">Επεξεργασία</button>
         <button type="button" data-sold="${it.id}" data-status="${it.status}">${sold?'↩ Επαναφορά':'Πουλήθηκε'}</button>
         <button type="button" class="del" data-del="${it.id}">Διαγραφή</button>
-      </div>
-    </div>`;
+      </div></div>`;
   }).join('');
-
   $('list').querySelectorAll('[data-edit]').forEach((b) => b.onclick = () => {
     const it = allItems.find((x) => x.id === b.dataset.edit);
     if (it) startEdit(it);
@@ -255,10 +307,38 @@ function renderList() {
     catch { b.disabled = false; alert('Κάτι πήγε στραβά.'); }
   });
   $('list').querySelectorAll('[data-del]').forEach((b) => b.onclick = async () => {
-    if (!confirm('Οριστική διαγραφή; Το προϊόν θα φύγει από τη διαχείριση και το site.')) return;
+    if (!confirm('Οριστική διαγραφή προϊόντος;')) return;
     b.disabled = true;
     try { await call('delete', { id: b.dataset.del }); await loadList(); if (editingId === b.dataset.del) resetForm(); }
     catch { b.disabled = false; alert('Κάτι πήγε στραβά.'); }
+  });
+}
+
+function renderCatList() {
+  if (!allCategories.length) {
+    $('catList').innerHTML = '<div class="muted">Δεν υπάρχουν κατηγορίες. Προσθέστε την πρώτη παραπάνω.</div>';
+    return;
+  }
+  $('catList').innerHTML = allCategories.map((c) =>
+    `<div class="item">
+      <img src="${c.hero||''}" alt=""/>
+      <div class="meta"><b>${c.name}</b><small>${c.slug}</small></div>
+      <div class="acts">
+        <button type="button" data-cedit="${c.id}">Επεξεργασία</button>
+        <button type="button" class="del" data-cdel="${c.id}">Διαγραφή</button>
+      </div></div>`).join('');
+  $('catList').querySelectorAll('[data-cedit]').forEach((b) => b.onclick = () => {
+    const c = allCategories.find((x) => x.id === b.dataset.cedit);
+    if (c) startCatEdit(c);
+  });
+  $('catList').querySelectorAll('[data-cdel]').forEach((b) => b.onclick = async () => {
+    if (!confirm('Διαγραφή κατηγορίας; Θα φύγει από το site (μόνο αν δεν έχει προϊόντα).')) return;
+    b.disabled = true;
+    try {
+      await call('delete_category', { id: b.dataset.cdel });
+      await loadCategories();
+      if (editingCatId === b.dataset.cdel) resetCatForm();
+    } catch (e) { alert(e.message); b.disabled = false; }
   });
 }
 
@@ -272,9 +352,39 @@ async function loadList() {
   }
 }
 
+async function unlock() {
+  try {
+    await call('list', {});
+    localStorage.setItem('eurocall_admin_code', code);
+    $('gate').style.display = 'none';
+    $('app').style.display = '';
+    await loadCategories();
+    await loadList();
+  } catch {
+    code = '';
+    $('gateMsg').className = 'msg err';
+    $('gateMsg').textContent = 'Λάθος κωδικός. Δοκιμάστε ξανά.';
+  }
+}
+
+$('tabProducts').onclick = () => {
+  $('tabProducts').classList.add('on'); $('tabCategories').classList.remove('on');
+  $('panelProducts').style.display = ''; $('panelCategories').style.display = 'none';
+};
+$('tabCategories').onclick = () => {
+  $('tabCategories').classList.add('on'); $('tabProducts').classList.remove('on');
+  $('panelCategories').style.display = ''; $('panelProducts').style.display = 'none';
+};
+
 $('codeBtn').onclick = () => { code = $('code').value.trim(); if (code) unlock(); };
 $('code').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('codeBtn').click(); });
 $('cancelEdit').onclick = resetForm;
+$('cancelCatEdit').onclick = resetCatForm;
+
+$('catName').addEventListener('input', () => {
+  if (!editingCatId && !$('catSlug').value.trim())
+    $('catSlug').placeholder = slugify($('catName').value) || 'π.χ. psyxi';
+});
 
 document.querySelectorAll('#condition button').forEach((b) => b.onclick = () => {
   condition = b.dataset.v;
@@ -289,42 +399,55 @@ $('photo').addEventListener('change', async (e) => {
   e.target.value = ''; renderThumbs();
 });
 
+$('catPhoto').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (f) try { catHero = await shrink(f); renderCatThumb(); } catch {}
+  e.target.value = '';
+});
+
 $('submitBtn').onclick = async () => {
   const name = $('name').value.trim();
   const category_slug = $('category').value;
-  if (!name) { showForm('err', 'Συμπληρώστε όνομα προϊόντος.'); return; }
-  if (!photos.length && !editingId) { showForm('err', 'Προσθέστε τουλάχιστον μία φωτογραφία.'); return; }
+  if (!name) { showMsg('formMsg','err','Συμπληρώστε όνομα.'); return; }
+  if (!photos.length && !editingId) { showMsg('formMsg','err','Προσθέστε φωτογραφία.'); return; }
   $('submitBtn').disabled = true;
-  const prev = $('submitBtn').textContent;
-  $('submitBtn').textContent = editingId ? 'Αποθήκευση…' : 'Ανεβαίνει…';
   try {
-    const payload = {
-      category_slug, name,
-      spec: $('spec').value.trim(),
-      condition,
-      note: $('note').value.trim(),
-    };
+    const payload = { category_slug, name, spec: $('spec').value.trim(), condition, note: $('note').value.trim() };
     const newPhotos = photos.filter((p) => p.startsWith('data:'));
     if (newPhotos.length) payload.images = newPhotos;
     else if (photos.length) payload.image_urls = photos;
-
-    if (editingId) {
-      await call('update', { id: editingId, ...payload });
-      showForm('ok', '✓ Αποθηκεύτηκε!');
-    } else {
-      if (!payload.images && !payload.image_urls) { showForm('err', 'Προσθέστε φωτογραφία.'); return; }
-      await call('submit', payload);
-      showForm('ok', '✓ Ανέβηκε! Θα φανεί στο site σε λίγο.');
-    }
-    resetForm();
-    loadList();
-  } catch (e) { showForm('err', 'Σφάλμα: ' + e.message); }
+    if (editingId) await call('update', { id: editingId, ...payload });
+    else await call('submit', payload);
+    showMsg('formMsg','ok', editingId ? '✓ Αποθηκεύτηκε!' : '✓ Ανέβηκε!');
+    resetForm(); await loadList();
+  } catch (e) { showMsg('formMsg','err', e.message); }
   $('submitBtn').disabled = false;
-  $('submitBtn').textContent = prev;
 };
 
-function showForm(kind, text) {
-  const m = $('formMsg'); m.className = 'msg ' + kind; m.textContent = text;
+$('catSubmitBtn').onclick = async () => {
+  const name = $('catName').value.trim();
+  const slug = $('catSlug').value.trim() || slugify(name);
+  if (!name) { showMsg('catFormMsg','err','Συμπληρώστε όνομα κατηγορίας.'); return; }
+  $('catSubmitBtn').disabled = true;
+  try {
+    const payload = {
+      name, slug,
+      tagline: $('catTagline').value.trim(),
+      intro: $('catIntro').value.trim(),
+    };
+    const newHero = catHero && catHero.startsWith('data:') ? catHero : null;
+    if (newHero) payload.images = [newHero];
+    else if (catHero) payload.hero_url = catHero;
+    if (editingCatId) await call('update_category', { id: editingCatId, ...payload });
+    else await call('create_category', payload);
+    showMsg('catFormMsg','ok', editingCatId ? '✓ Αποθηκεύτηκε!' : '✓ Η κατηγορία προστέθηκε!');
+    resetCatForm(); await loadCategories();
+  } catch (e) { showMsg('catFormMsg','err', e.message); }
+  $('catSubmitBtn').disabled = false;
+};
+
+function showMsg(id, kind, text) {
+  const m = $(id); m.className = 'msg ' + kind; m.textContent = text;
   if (kind === 'ok') setTimeout(() => { m.className = 'msg'; }, 5000);
 }
 
