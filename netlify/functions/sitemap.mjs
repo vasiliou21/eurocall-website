@@ -53,12 +53,11 @@ export default async () => {
     (categoryUrls.length ? '\n' + categoryUrls.join('\n') : '') +
     '\n</urlset>';
 
-  return {
-    statusCode: 200,
+  return new Response(xml, {
+    status: 200,
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=3600, s-maxage=3600'
-    },
-    body: xml
-  };
+    }
+  });
 };
