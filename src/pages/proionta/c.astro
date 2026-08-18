@@ -68,6 +68,22 @@ import { ISTOS } from '../../data/istos.js';
 </Base>
 
 <script is:inline define:vars={{ ISTOS, virtualCategory }}>
+  const EURO_SITE = 'https://eurocall-faragiannis.gr';
+
+  function euroSetMeta(selector, attr, value) {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+
+  function euroCategoryTitle(name) {
+    return `${name} — Eurocall | Εξοπλισμός Επαγγελματικής Κουζίνας Ιωάννινα`;
+  }
+
+  function euroCategoryDescription(name, intro, tagline) {
+    if (intro || tagline) return intro || tagline;
+    return `${name} επαγγελματικής κουζίνας από τη Eurocall Ιωάννινα (από το 2000). Νέος & μεταχειρισμένος εξοπλισμός. Στείλτε αίτημα προσφοράς — απάντηση εντός 24 ωρών.`;
+  }
+
   (async function () {
     const slug = window.__euroCatSlug;
     if (!slug) { location.replace('/'); return; }
@@ -91,13 +107,37 @@ import { ISTOS } from '../../data/istos.js';
     }
 
     if (!cat) {
+      euroSetMeta('meta[name="robots"]', 'content', 'noindex, nofollow');
       titleEl.textContent = 'Η κατηγορία δεν βρέθηκε';
       introEl.textContent = 'Ίσως αφαιρέθηκε ή δεν υπάρχει πλέον.';
       eyebrowEl.textContent = '';
       return;
     }
 
-    document.title = `${cat.name} — Eurocall · Εξοπλισμός Επαγγελματικής Κουζίνας`;
+    const canonical = `${EURO_SITE}/proionta/${encodeURIComponent(slug)}/`;
+    euroSetMeta('link[rel="canonical"]', 'href', canonical);
+    euroSetMeta('meta[property="og:url"]', 'content', canonical);
+
+    document.title = euroCategoryTitle(cat.name);
+    const description = euroCategoryDescription(cat.name, cat.intro, cat.tagline);
+    euroSetMeta('meta[name="description"]', 'content', description);
+    euroSetMeta('meta[property="og:description"]', 'content', description);
+    euroSetMeta('meta[property="og:title"]', 'content', document.title);
+
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Αρχική', item: `${EURO_SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Προϊόντα' },
+        { '@type': 'ListItem', position: 3, name: cat.name, item: canonical }
+      ]
+    };
+    const ld = document.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify(breadcrumb);
+    document.head.appendChild(ld);
+
     eyebrowEl.textContent = isUsed ? 'Διαθέσιμα τώρα' : 'Κατηγορία προϊόντων';
     titleEl.textContent = cat.name;
     introEl.textContent = cat.intro || cat.tagline || '';
