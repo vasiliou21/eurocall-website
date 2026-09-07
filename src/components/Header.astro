@@ -21,6 +21,10 @@ const { current } = Astro.props;
           </div>
         </div>
       </div>
+      <a href="/proionta/metaxeirismena" aria-current={current === 'used' ? 'page' : undefined} class="nav__used">
+        Μεταχειρισμένα
+        <span class="nav-badge">Ευκαιρίες</span>
+      </a>
       <a href="/proionta/anoxeidotes-kataskeves#custom" aria-current={current === 'custom' ? 'page' : undefined}>Κατασκευές</a>
       <a href="/epikoinonia" aria-current={current === 'contact' ? 'page' : undefined}>Επικοινωνία</a>
     </nav>
@@ -52,6 +56,10 @@ const { current } = Astro.props;
     </button>
   </div>
   <nav class="mmenu__body" aria-label="Πλοήγηση κινητού">
+    <a class="mmenu__link mmenu__link--used" href="/proionta/metaxeirismena" style="color:#fff;background:rgba(45,168,132,0.22);padding:11px 12px;border-radius:4px;border:1px solid rgba(45,168,132,0.45);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <span>Μεταχειρισμένος Εξοπλισμός</span>
+      <span style="background:var(--green);color:#fff;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:3px">ΕΥΚΑΙΡΙΕΣ</span>
+    </a>
     <span class="mmenu__label">Κατηγορίες προϊόντων</span>
     <div class="mmenu__cats" id="mmenuCats">
       <div class="muted" style="padding:8px 0">Φόρτωση…</div>

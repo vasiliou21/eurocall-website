@@ -14,10 +14,10 @@ const ISTOS = {
 
 const STATIC_PAGES = [
   { loc: '/', priority: '1.0', changefreq: 'weekly' },
-  { loc: '/epikoinonia/', priority: '0.7', changefreq: 'monthly' },
+  { loc: '/proionta/metaxeirismena/', priority: '0.9', changefreq: 'weekly' },
   { loc: '/endiaferon/', priority: '0.8', changefreq: 'monthly' },
-  { loc: '/efxaristoume/', priority: '0.3', changefreq: 'yearly' },
-  { loc: '/proionta/metaxeirismena/', priority: '0.8', changefreq: 'weekly' }
+  { loc: '/epikoinonia/', priority: '0.7', changefreq: 'monthly' },
+  { loc: '/efxaristoume/', priority: '0.3', changefreq: 'yearly' }
 ];
 
 function xmlUrl(loc, priority, changefreq) {

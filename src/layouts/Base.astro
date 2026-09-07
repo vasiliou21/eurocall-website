@@ -4,13 +4,55 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const {
-  title = 'Eurocall — Εξοπλισμός Επαγγελματικής Κουζίνας · Ιωάννινα',
-  description = 'Κέντρο εξοπλισμού επαγγελματικής κουζίνας από το 2000. Φούρνοι, ψύξη, ανοξείδωτες κατασκευές, μηχανήματα εστίασης. Νέος & μεταχειρισμένος εξοπλισμός, custom κατασκευές. Ιωάννινα & πανελλαδικά.',
+  title = 'Eurocall — Εξοπλισμός Μαζικής Εστίασης & Επαγγελματικής Κουζίνας · Ιωάννινα',
+  description = 'Κέντρο εξοπλισμού μαζικής εστίασης από το 2000. Φούρνοι, ψύξη, ανοξείδωτες κατασκευές, πλυντήρια, μηχανήματα. Καινούριος & ελεγμένος μεταχειρισμένος εξοπλισμός. Ιωάννινα & πανελλαδικά.',
   current,
+  canonicalUrl,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = canonicalUrl || new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL('/images/eurocall-hero-kitchen.png', Astro.site).href;
+
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': 'https://eurocall-faragiannis.gr/#organization',
+  'name': 'Eurocall',
+  'legalName': 'Eurocall - Βασίλειος Φαραγιάννης',
+  'url': 'https://eurocall-faragiannis.gr',
+  'logo': 'https://eurocall-faragiannis.gr/favicon.svg',
+  'image': ogImage,
+  'description': 'Κέντρο εξοπλισμού μαζικής εστίασης και επαγγελματικής κουζίνας στα Ιωάννινα από το 2000. Καινούριος και ελεγμένος μεταχειρισμένος εξοπλισμός, custom ανοξείδωτες κατασκευές inox.',
+  'telephone': '+306945936149',
+  'email': 'vasfar64@gmail.com',
+  'priceRange': '€€',
+  'address': {
+    '@type': 'PostalAddress',
+    'streetAddress': 'Βελισσαρίου 6, Πεδινή',
+    'addressLocality': 'Ιωάννινα',
+    'postalCode': '45500',
+    'addressRegion': 'Ήπειρος',
+    'addressCountry': 'GR'
+  },
+  'geo': {
+    '@type': 'GeoCoordinates',
+    'latitude': 39.6172,
+    'longitude': 20.8524
+  },
+  'openingHoursSpecification': [
+    {
+      '@type': 'OpeningHoursSpecification',
+      'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      'opens': '08:00',
+      'closes': '16:00'
+    }
+  ],
+  'areaServed': [
+    { '@type': 'AdministrativeArea', 'name': 'Ιωάννινα' },
+    { '@type': 'AdministrativeArea', 'name': 'Ήπειρος' },
+    { '@type': 'Country', 'name': 'Ελλάδα' }
+  ]
+};
 ---
 <!doctype html>
 <html lang="el">
@@ -33,6 +75,7 @@ const ogImage = new URL('/images/eurocall-hero-kitchen.png', Astro.site).href;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </head>
   <body>
     <Header current={current} />

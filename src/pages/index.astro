@@ -12,10 +12,12 @@ import LiveCategories from '../components/LiveCategories.astro';
     <div class="wrap">
       <div class="hero__in">
         <div>
+          <span class="eyebrow" style="color:#d8e6ff;text-shadow:0 1px 8px rgba(6,27,114,0.35)">Εξοπλισμός Μαζικής Εστίασης · Από το 2000</span>
           <h1>25 χρόνια εξοπλίζουμε <em>επαγγελματικές κουζίνες.</em></h1>
-          <p class="hero__sub">Φούρνοι, ψύξη, μηχανήματα και ανοξείδωτες κατασκευές δικής μας παραγωγής — για εστιατόρια, ξενοδοχεία και catering. Νέος και μεταχειρισμένος εξοπλισμός, με service και ανταλλακτικά που τον κρατούν στη δουλειά.</p>
+          <p class="hero__sub">Εξοπλισμός μαζικής εστίασης, φούρνοι, επαγγελματική ψύξη, πλυντήρια και ανοξείδωτες κατασκευές δικής μας παραγωγής — για εστιατόρια, καφέ, ξενοδοχεία και catering. Καινούριος και ελεγμένος μεταχειρισμένος εξοπλισμός με άμεση τεχνική υποστήριξη.</p>
           <div class="hero__ctas">
             <a href="#categories" class="btn btn--flame">Δείτε τα προϊόντα</a>
+            <a href="/proionta/metaxeirismena" class="btn btn--green">Μεταχειρισμένα</a>
             <a href="/endiaferon" class="btn btn--ghost-l">Ζητήστε προσφορά</a>
           </div>
         </div>
@@ -49,18 +51,22 @@ import LiveCategories from '../components/LiveCategories.astro';
     </div>
   </section>
 
-  <!-- ΔΙΑΘΕΣΙΜΑ ΜΕΤΑΧΕΙΡΙΣΜΕΝΑ (client-side· κρύβεται αν άδειο) -->
-  <section class="sec sec--steelbg" id="usedNow" style="display:none">
+  <!-- ΔΙΑΘΕΣΙΜΑ ΜΕΤΑΧΕΙΡΙΣΜΕΝΑ -->
+  <section class="sec sec--steelbg" id="usedNow">
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Διαθέσιμα τώρα</span>
-        <h2>Μεταχειρισμένος εξοπλισμός — ελεγμένος, έτοιμος για δουλειά</h2>
-        <p>Επιλεγμένα μεταχειρισμένα που έχουμε αυτή τη στιγμή. <a href="/proionta/metaxeirismena" style="color:var(--flame);font-weight:600">Δείτε όλα τα μεταχειρισμένα →</a></p>
+        <h2>Μεταχειρισμένος εξοπλισμός μαζικής εστίασης — ελεγμένος & έτοιμος</h2>
+        <p>Επιλεγμένος μεταχειρισμένος εξοπλισμός για άμεση εξοικονόμηση κόστους. <a href="/proionta/metaxeirismena" style="color:var(--flame);font-weight:600">Δείτε όλα τα μεταχειρισμένα & συχνές ερωτήσεις →</a></p>
       </div>
       <div class="prods prods--3" id="usedGrid"></div>
+      <LiveProducts
+        target="#usedGrid"
+        mode="used"
+        emptyMessage="Αυτή τη στιγμή τα διαθέσιμα μεταχειρισμένα ετοιμάζονται στις εγκαταστάσεις μας. Καλέστε μας στο 694 593 6149 για άμεση ενημέρωση διαθεσιμότητας."
+      />
     </div>
   </section>
-  <LiveProducts target="#usedGrid" mode="used" hideSelector="#usedNow" emptyMessage="" />
 
   <!-- CUSTOM -->
   <section class="sec sec--coal" id="custom">

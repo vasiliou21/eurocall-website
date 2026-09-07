@@ -49,6 +49,7 @@ h1, h2, h3 { font-family: var(--disp); font-weight: 700; line-height: 1.08; lett
 .nav > a::after, .nav__mega-trigger::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: #fff; transform: scaleX(0); transition: transform 0.25s ease; }
 .nav > a:hover::after, .nav__mega-trigger:hover::after, .nav__item.open .nav__mega-trigger::after { transform: scaleX(1); }
 .nav > a[aria-current="page"]::after { transform: scaleX(1); }
+.nav-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--green); color: #fff; padding: 2px 7px; border-radius: 999px; line-height: 1.2; }
 .nav__chev { transition: transform 0.3s ease; opacity: 0.6; }
 .nav__item.open .nav__chev { transform: rotate(180deg); }
 .hdr__cta { display: flex; align-items: center; gap: 16px; }

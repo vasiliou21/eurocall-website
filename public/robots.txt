@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /diaxeirisi/
 
 Sitemap: https://eurocall-faragiannis.gr/sitemap.xml
