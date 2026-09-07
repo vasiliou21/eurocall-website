@@ -58,9 +58,9 @@ const { mode = 'home', target, excludeSlug = '', limit = 4 } = Astro.props;
           return;
         }
         el.innerHTML = rows.map((c, i) => {
-          const hero = c.hero || defaultHero;
+          const hero = (c.hero && c.hero.trim()) ? c.hero : defaultHero;
           return `<a href="/proionta/${esc(c.slug)}" class="catrow">` +
-            `<div class="catrow__img"><img src="${esc(hero)}" alt="${esc(c.name)}" loading="lazy" /></div>` +
+            `<div class="catrow__img"><img src="${esc(hero)}" alt="${esc(c.name)}" loading="lazy" width="300" height="250" /></div>` +
             `<div class="catrow__body">` +
             `<div class="catrow__top"><span class="catrow__num">${String(i + 1).padStart(2, '0')}</span><h3>${esc(c.name)}</h3></div>` +
             `<p class="catrow__desc">${esc(c.intro || c.tagline || '')}</p>` +
